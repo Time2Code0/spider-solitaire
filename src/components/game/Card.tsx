@@ -5,6 +5,7 @@ import { memo } from "react";
 import { describeBack, describeFront } from "@/game/decks";
 import type { CardBackId, CardFrontId, Card as CardModel } from "@/game/types";
 import { RANK_LABELS, SUIT_NAMES } from "@/game/types";
+import { cn } from "@/lib/utils";
 import { findDropColumn, useDragContext } from "./DragContext";
 
 export interface CardProps {
@@ -70,15 +71,15 @@ function CardBase(props: CardProps) {
     <motion.div
       animate={{ opacity: 1, scale: 1 }}
       aria-label={label}
-      className={[
+      className={cn(
         "card-surface absolute top-0 left-0",
         dragEnabled ? "cursor-grab active:cursor-grabbing" : "cursor-pointer",
-        card.faceUp ? "" : "card-surface--facedown",
-        selected ? "selection-ring" : "",
-        highlighted && !selected ? "highlight-ring" : "",
-        hinted && !selected ? "pulse-hint" : "",
-        isPartOfActiveDrag ? "shadow-2xl" : "",
-      ].join(" ")}
+        !card.faceUp && "card-surface--facedown",
+        selected && "selection-ring",
+        highlighted && !selected && "highlight-ring",
+        hinted && !selected && "pulse-hint",
+        isPartOfActiveDrag && "shadow-2xl"
+      )}
       data-card-id={card.id}
       drag={dragEnabled}
       dragElastic={0}
@@ -190,11 +191,11 @@ export function CardStatic({ card, front, back }: CardStaticProps) {
   return (
     <div
       aria-hidden
-      className={[
+      className={cn(
         "card-surface",
-        card.faceUp ? "" : "card-surface--facedown",
-        "shadow-2xl",
-      ].join(" ")}
+        !card.faceUp && "card-surface--facedown",
+        "shadow-2xl"
+      )}
     >
       {card.faceUp ? (
         <CardFace back={back} card={card} front={front} />

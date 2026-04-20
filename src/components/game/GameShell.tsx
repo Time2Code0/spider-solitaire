@@ -29,6 +29,8 @@ import { Stock } from "./Stock";
 import { useTimer } from "./useTimer";
 import { WinFlourish } from "./WinFlourish";
 
+const IS_DEV = process.env.NODE_ENV === "development";
+
 export function GameShell() {
   return (
     <HotkeysProvider>
@@ -56,6 +58,8 @@ function InnerShell() {
   const canDeal = useGameStore(selectCanDeal);
   const anyDialogOpen = useGameStore(selectAnyDialogOpen);
   const lastMoveAt = useGameStore((s) => s.lastMoveAt);
+  const devForceWin = useGameStore((s) => s.devForceWin);
+  const devForceLose = useGameStore((s) => s.devForceLose);
 
   useTimer();
 
@@ -89,6 +93,12 @@ function InnerShell() {
   useHotkey("Mod+Z", () => undo(), { enabled: canUndo && !anyDialogOpen });
   useHotkey("H", () => cycleHint(), { enabled: !anyDialogOpen });
   useHotkey("Space", () => deal(), { enabled: canDeal && !anyDialogOpen });
+  useHotkey("Shift+W", () => devForceWin(), {
+    enabled: IS_DEV && !!present && !anyDialogOpen,
+  });
+  useHotkey("Shift+L", () => devForceLose(), {
+    enabled: IS_DEV && !!present && !anyDialogOpen,
+  });
 
   const [selection, setSelection] = useState<{
     columnIndex: number;

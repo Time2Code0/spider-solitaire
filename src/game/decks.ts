@@ -49,21 +49,15 @@ export interface CardBackMeta {
 }
 
 export const CARD_BACKS: Record<CardBackId, CardBackMeta> = {
-  red: {
-    id: "red",
+  crimson: {
+    id: "crimson",
     label: "Crimson",
-    src: (front) =>
-      front === "classic"
-        ? "/cards/classic/RED_BACK.svg"
-        : "/cards/backs/slate.svg",
+    src: () => "/cards/backs/crimson.svg",
   },
-  blue: {
-    id: "blue",
+  ocean: {
+    id: "ocean",
     label: "Ocean",
-    src: (front) =>
-      front === "classic"
-        ? "/cards/classic/BLUE_BACK.svg"
-        : "/cards/backs/slate.svg",
+    src: () => "/cards/backs/ocean.svg",
   },
   forest: {
     id: "forest",
@@ -75,7 +69,36 @@ export const CARD_BACKS: Record<CardBackId, CardBackMeta> = {
     label: "Slate",
     src: () => "/cards/backs/slate.svg",
   },
+  rosewood: {
+    id: "rosewood",
+    label: "Rosewood",
+    src: () => "/cards/backs/rosewood.svg",
+  },
+  midnight: {
+    id: "midnight",
+    label: "Midnight",
+    src: () => "/cards/backs/midnight.svg",
+  },
 };
+
+export interface CardBackGroup {
+  id: "classic" | "modern";
+  label: string;
+  backs: CardBackId[];
+}
+
+export const CARD_BACK_GROUPS: CardBackGroup[] = [
+  {
+    id: "classic",
+    label: "Classic",
+    backs: ["crimson", "ocean"],
+  },
+  {
+    id: "modern",
+    label: "Modern",
+    backs: ["forest", "slate", "rosewood", "midnight"],
+  },
+];
 
 export function cardCode(rank: Rank, suit: Suit): string {
   return `${RANK_CODES[rank]}${suit}`;
@@ -135,4 +158,6 @@ export function describeBack(
 }
 
 export const CARD_FRONT_IDS: CardFrontId[] = ["classic", "vintage", "modern"];
-export const CARD_BACK_IDS: CardBackId[] = ["red", "blue", "forest", "slate"];
+export const CARD_BACK_IDS: CardBackId[] = CARD_BACK_GROUPS.flatMap(
+  (group) => group.backs
+);

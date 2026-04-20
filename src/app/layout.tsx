@@ -18,8 +18,8 @@ type RootLayoutProps = Readonly<{ children: React.ReactNode }>;
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html className={geistSans.variable} lang="en">
-      <body className="flex min-h-screen flex-col font-sans text-base antialiased">
-        {children}
+      <body className="relative font-sans text-base antialiased">
+        <div className="isolate flex min-h-screen flex-col">{children}</div>
       </body>
     </html>
   );

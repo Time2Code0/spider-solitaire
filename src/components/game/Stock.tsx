@@ -2,6 +2,7 @@
 
 import { describeBack } from "@/game/decks";
 import type { Card, CardBackId, CardFrontId } from "@/game/types";
+import { cn } from "@/lib/utils";
 
 export interface StockProps {
   back: CardBackId;
@@ -30,11 +31,11 @@ export function Stock(props: StockProps) {
         aria-label={
           canDeal ? `Deal from stock, ${remaining} deals left` : "Stock empty"
         }
-        className={[
+        className={cn(
           "relative shrink-0",
           canDeal ? "cursor-pointer" : "cursor-not-allowed opacity-50",
-          hintPulse ? "pulse-hint" : "",
-        ].join(" ")}
+          hintPulse && "pulse-hint"
+        )}
         disabled={!canDeal}
         key={hintPulse ? `stock-hint-${hintPulseKey}` : undefined}
         onClick={onDeal}

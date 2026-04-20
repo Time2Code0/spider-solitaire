@@ -45,7 +45,13 @@ export interface GameState {
 }
 
 export type CardFrontId = "classic" | "vintage" | "modern";
-export type CardBackId = "red" | "blue" | "forest" | "slate";
+export type CardBackId =
+  | "crimson"
+  | "ocean"
+  | "forest"
+  | "slate"
+  | "rosewood"
+  | "midnight";
 export type SoundsMode = "on" | "off";
 
 export interface Settings {
