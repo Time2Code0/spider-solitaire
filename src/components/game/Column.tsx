@@ -1,6 +1,5 @@
 "use client";
 
-import { useDroppable } from "@dnd-kit/core";
 import { AnimatePresence } from "motion/react";
 import { deepestMovableIndex } from "@/game/engine";
 import type { CardBackId, CardFrontId, Card as CardModel } from "@/game/types";
@@ -40,11 +39,6 @@ export function Column(props: ColumnProps) {
     onTargetClick,
   } = props;
 
-  const { isOver, setNodeRef } = useDroppable({
-    id: `column-${columnIndex}`,
-    data: { columnIndex },
-  });
-
   const deepest = deepestMovableIndex(cards);
 
   const offsets: number[] = [];
@@ -59,12 +53,10 @@ export function Column(props: ColumnProps) {
   return (
     <section
       aria-label={`Column ${columnIndex + 1}, ${cards.length} cards`}
-      className={[
-        "relative select-none",
-        invalidFlash ? "column-shake" : "",
-        isOver ? "rounded-md outline-2 outline-[var(--color-gold)]/80" : "",
-      ].join(" ")}
-      ref={setNodeRef}
+      className={["relative select-none", invalidFlash ? "column-shake" : ""]
+        .join(" ")
+        .trim()}
+      data-column-index={columnIndex}
       style={{
         width: "var(--card-w)",
         minHeight: "var(--card-h)",
@@ -90,16 +82,33 @@ export function Column(props: ColumnProps) {
             cardIndex >= selection.cardIndex;
           const isHinted = hintedCardIds.has(card.id);
           const isDraggable = card.faceUp && cardIndex >= deepest;
-          const isPartOfActiveDrag = Boolean(
-            activeDrag &&
-              activeDrag.columnIndex === columnIndex &&
-              cardIndex >= activeDrag.cardIndex
-          );
+          const isLeader =
+            activeDrag !== null &&
+            activeDrag.columnIndex === columnIndex &&
+            activeDrag.cardIndex === cardIndex;
+          const isFollower =
+            activeDrag !== null &&
+            activeDrag.columnIndex === columnIndex &&
+            activeDrag.cardIndex < cardIndex;
+          const isPartOfActiveDrag = isLeader || isFollower;
           return (
             <div
               className="absolute left-0 w-full"
               key={card.id}
-              style={{ top: `calc(var(--card-h) * ${offset})` }}
+              style={{
+                top: `calc(var(--card-h) * ${offset})`,
+                // Followers mirror the leader's live drag offset through CSS
+                // variables set imperatively in Card.tsx's `onDrag` handler.
+                // Keeping the transform on this wrapper (rather than the
+                // motion.div inside) avoids colliding with Motion's own
+                // transform management for the leader.
+                ...(isFollower
+                  ? {
+                      transform:
+                        "translate(var(--drag-x, 0), var(--drag-y, 0))",
+                    }
+                  : {}),
+              }}
             >
               <Card
                 back={back}
