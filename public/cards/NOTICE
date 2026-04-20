@@ -1,0 +1,33 @@
+Third-Party Card Artwork Attributions
+======================================
+
+Spider Solitaire ships with three sets of card artwork, each vendored from a
+permissively-licensed upstream source. The original license text for each deck
+is preserved alongside its SVG files in the corresponding subdirectory.
+
+
+1. Classic deck — ./classic/
+   Author: kumanofoo
+   Source: https://github.com/kumanofoo/spider
+   License: MIT (see ./classic/LICENSE)
+   Copyright (c) 2023 kumanofoo
+
+
+2. Vintage deck — ./vintage/svg-cards.svg
+   Author: David Bellot
+   Source: http://svg-cards.sourceforge.net/
+           (mirrored via https://github.com/htdebeer/SVG-cards)
+   License: LGPL-2.1 (see ./vintage/LICENSE)
+   Copyright (c) 2001-2012 David Bellot
+
+
+3. Modern deck — ./modern/
+   Author: Byron Knoll
+   Source: https://github.com/notpeter/Vector-Playing-Cards
+           (originally https://byronknoll.blogspot.com/2011/03/vector-playing-cards.html)
+   License: Public domain (see ./modern/LICENSE)
+   Note: The Ace of Spades is based on an original by Suzanne Tyson.
+
+
+The card-back patterns under ./backs/ are original work created for this
+project and are licensed under the same terms as the rest of the application.
