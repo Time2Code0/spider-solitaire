@@ -1,16 +1,7 @@
 "use client";
 
-import {
-  DndContext,
-  type DragEndEvent,
-  DragOverlay,
-  type DragStartEvent,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
 import { HotkeysProvider, useHotkey } from "@tanstack/react-hotkeys";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
 import { EndOfGameDialog } from "@/components/dialogs/EndOfGameDialog";
 import { SettingsDialog } from "@/components/dialogs/SettingsDialog";
@@ -28,7 +19,11 @@ import {
 import type { GameState, Move } from "@/game/types";
 import { Board } from "./Board";
 import { BottomBar } from "./BottomBar";
-import { DraggedStack } from "./DraggedStack";
+import {
+  type ActiveDrag,
+  type DragContextValue,
+  DragProvider,
+} from "./DragContext";
 import { Foundations } from "./Foundations";
 import { Stock } from "./Stock";
 import { useTimer } from "./useTimer";
@@ -95,19 +90,17 @@ function InnerShell() {
   useHotkey("H", () => cycleHint(), { enabled: !anyDialogOpen });
   useHotkey("Space", () => deal(), { enabled: canDeal && !anyDialogOpen });
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
-  );
-
   const [selection, setSelection] = useState<{
     columnIndex: number;
     cardIndex: number;
   } | null>(null);
 
-  const [activeDrag, setActiveDrag] = useState<{
-    columnIndex: number;
-    cardIndex: number;
-  } | null>(null);
+  const [activeDrag, setActiveDrag] = useState<ActiveDrag | null>(null);
+
+  // Container used to carry the `--drag-x` / `--drag-y` CSS variables so the
+  // follower cards in the active drag stack can mirror the leader's Motion
+  // transform without triggering React re-renders per pointer frame.
+  const dragContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setSelection(null);
@@ -123,51 +116,25 @@ function InnerShell() {
     [present, hintVisible, hintIndex]
   );
 
-  const onDragStart = useCallback(
-    (event: DragStartEvent) => {
-      clearHint();
-      const data = event.active.data.current as
-        | { columnIndex: number; cardIndex: number }
-        | undefined;
-      if (data) {
-        setActiveDrag({
-          columnIndex: data.columnIndex,
-          cardIndex: data.cardIndex,
-        });
+  const handleSetActiveDrag = useCallback(
+    (drag: ActiveDrag | null) => {
+      if (drag) {
+        clearHint();
       }
+      setActiveDrag(drag);
     },
     [clearHint]
   );
 
-  const onDragEnd = useCallback(
-    (event: DragEndEvent) => {
-      setActiveDrag(null);
-      const { active, over } = event;
-      if (!over) {
-        return;
-      }
-      const activeData = active.data.current as
-        | { columnIndex: number; cardIndex: number }
-        | undefined;
-      const overData = over.data.current as { columnIndex: number } | undefined;
-      if (!(activeData && overData)) {
-        return;
-      }
-      if (activeData.columnIndex === overData.columnIndex) {
-        return;
-      }
-      attemptMove(
-        activeData.columnIndex,
-        activeData.cardIndex,
-        overData.columnIndex
-      );
-    },
-    [attemptMove]
+  const dragContextValue = useMemo<DragContextValue>(
+    () => ({
+      activeDrag,
+      attemptMove,
+      containerRef: dragContainerRef,
+      setActiveDrag: handleSetActiveDrag,
+    }),
+    [activeDrag, attemptMove, handleSetActiveDrag]
   );
-
-  const onDragCancel = useCallback(() => {
-    setActiveDrag(null);
-  }, []);
 
   const onSelect = useCallback(
     (columnIndex: number, cardIndex: number) => {
@@ -233,20 +200,12 @@ function InnerShell() {
     return <div className="felt-backdrop flex min-h-screen" />;
   }
 
-  const draggedCards =
-    activeDrag && present
-      ? (present.tableau[activeDrag.columnIndex]?.slice(activeDrag.cardIndex) ??
-        [])
-      : [];
-
   return (
-    <DndContext
-      onDragCancel={onDragCancel}
-      onDragEnd={onDragEnd}
-      onDragStart={onDragStart}
-      sensors={sensors}
-    >
-      <main className="felt-backdrop flex min-h-screen flex-col pb-[var(--bottom-bar-h)]">
+    <DragProvider value={dragContextValue}>
+      <main
+        className="felt-backdrop flex min-h-screen flex-col pb-[var(--bottom-bar-h)]"
+        ref={dragContainerRef}
+      >
         <div className="flex-1 px-8 py-6">
           {present ? (
             <Board
@@ -298,16 +257,7 @@ function InnerShell() {
         <EndOfGameDialog />
         <ConfirmDialog />
       </main>
-      <DragOverlay dropAnimation={null}>
-        {draggedCards.length > 0 ? (
-          <DraggedStack
-            back={settings.cardBack}
-            cards={draggedCards}
-            front={settings.cardFront}
-          />
-        ) : null}
-      </DragOverlay>
-    </DndContext>
+    </DragProvider>
   );
 }
 
