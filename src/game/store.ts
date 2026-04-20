@@ -7,13 +7,16 @@ import {
   canDeal,
   cloneState,
   createInitialState,
+  FULL_SUIT_LENGTH,
   hasAnyLegalMove,
   isWon,
+  TABLEAU_COLUMNS,
 } from "./engine";
 import { enumerateLegalMoves } from "./hints";
 import { playSound, setSoundsEnabled } from "./sounds";
 import { emptyStats, recordLoss, recordWin } from "./stats";
 import type {
+  Card,
   CardBackId,
   CardFrontId,
   Difficulty,
@@ -23,7 +26,9 @@ import type {
   Settings,
   SoundsMode,
   StatsByDifficulty,
+  Suit,
 } from "./types";
+import { SUITS } from "./types";
 
 const MAX_HISTORY = 500;
 const HISTORY_TRIM = 400;
@@ -32,8 +37,7 @@ export type DialogName =
   | "settings"
   | "stats"
   | "end-of-game"
-  | "confirm-new-game"
-  | "confirm-reset-stats";
+  | "confirm-new-game";
 
 export interface GameStore {
   attemptMove: (from: number, cardIndex: number, to: number) => boolean;
@@ -41,6 +45,8 @@ export interface GameStore {
   closeDialog: (name: DialogName) => void;
   cycleHint: () => void;
   deal: () => boolean;
+  devForceLose: () => void;
+  devForceWin: () => void;
   hasHydrated: boolean;
   hintIndex: number;
   hintPulseKey: number;
@@ -67,7 +73,7 @@ export interface GameStore {
 const defaultSettings: Settings = {
   defaultDifficulty: 4,
   cardFront: "classic",
-  cardBack: "red",
+  cardBack: "crimson",
   sounds: "off",
   confirmNewGame: true,
 };
@@ -101,6 +107,44 @@ function finalizeIfWon(
 
 function applySoundsSetting(mode: SoundsMode): void {
   setSoundsEnabled(mode === "on");
+}
+
+// Redistribute all cards from the current game into 8 complete foundation
+// runs (K→A) so `isWon` returns true and downstream flows (win flourish,
+// stats, end-of-game dialog) receive real cards to render.
+function buildWinningState(state: GameState): GameState {
+  const allCards: Card[] = [
+    ...state.tableau.flat(),
+    ...state.stock.flat(),
+    ...state.foundations.flat(),
+  ];
+
+  const bySuit: Record<Suit, Card[]> = { S: [], H: [], D: [], C: [] };
+  for (const card of allCards) {
+    bySuit[card.suit].push(card);
+  }
+
+  const foundations: Card[][] = [];
+  for (const suit of SUITS) {
+    const cards = bySuit[suit];
+    const copies = Math.floor(cards.length / FULL_SUIT_LENGTH);
+    for (let copy = 0; copy < copies; copy++) {
+      const run = cards
+        .slice(copy * FULL_SUIT_LENGTH, (copy + 1) * FULL_SUIT_LENGTH)
+        .sort((a, b) => b.rank - a.rank)
+        .map((c) => ({ ...c, faceUp: true }));
+      foundations.push(run);
+    }
+  }
+
+  return {
+    ...cloneState(state),
+    tableau: Array.from({ length: TABLEAU_COLUMNS }, () => []),
+    stock: [],
+    foundations,
+    completedAt: Date.now(),
+    moves: state.moves + 1,
+  };
 }
 
 const END_OF_GAME_DIALOG_DELAY_MS = 2800;
@@ -156,6 +200,55 @@ export const useGameStore = create<GameStore>()(
           invalidFlashColumn: null,
         });
         playSound("deal");
+      },
+
+      devForceWin() {
+        const { present, past, stats } = get();
+        if (!present || isWon(present)) {
+          return;
+        }
+        const winning = buildWinningState(present);
+        const entry: LeaderboardEntry = {
+          moves: winning.moves,
+          elapsedMs: winning.elapsedMs,
+          finishedAt: winning.completedAt ?? Date.now(),
+        };
+        const nextStats = recordWin(stats, winning.difficulty, entry);
+        playSound("foundation");
+        playSound("win");
+        set({
+          present: winning,
+          past: pushHistory(past, present),
+          stats: nextStats,
+          lastMoveAt: Date.now(),
+          hintIndex: 0,
+          hintVisible: false,
+          hintPulseKey: 0,
+          invalidFlashColumn: null,
+        });
+        scheduleEndOfGameDialog(get);
+      },
+
+      devForceLose() {
+        const { present, stats, settings } = get();
+        if (!present) {
+          return;
+        }
+        const nextStats = isWon(present)
+          ? stats
+          : recordLoss(stats, present.difficulty);
+        const fresh = createInitialState(settings.defaultDifficulty);
+        playSound("invalid");
+        set({
+          present: fresh,
+          past: [],
+          stats: nextStats,
+          lastMoveAt: Date.now(),
+          hintIndex: 0,
+          hintVisible: false,
+          hintPulseKey: 0,
+          invalidFlashColumn: null,
+        });
       },
 
       attemptMove(from, cardIndex, to) {
@@ -341,13 +434,25 @@ export const useGameStore = create<GameStore>()(
     }),
     {
       name: "spider-solitaire@1",
-      version: 1,
+      version: 2,
       partialize: (state) => ({
         present: state.present,
         past: state.past,
         settings: state.settings,
         stats: state.stats,
       }),
+      migrate: (persisted, version) => {
+        const state = persisted as { settings?: Settings } | undefined;
+        if (state?.settings && version < 2) {
+          const legacy = state.settings.cardBack as CardBackId | "red" | "blue";
+          if (legacy === "red") {
+            state.settings.cardBack = "crimson";
+          } else if (legacy === "blue") {
+            state.settings.cardBack = "ocean";
+          }
+        }
+        return state as unknown;
+      },
       onRehydrateStorage: () => (state) => {
         if (state) {
           applySoundsSetting(state.settings.sounds);

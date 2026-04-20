@@ -5,7 +5,8 @@ import { formatElapsed } from "@/components/game/useTimer";
 import { averageWinElapsedMs, averageWinMoves, winRate } from "@/game/stats";
 import { useGameStore } from "@/game/store";
 import type { Difficulty, DifficultyStats } from "@/game/types";
-import { GameDialog } from "./DialogPrimitive";
+import { cn } from "@/lib/utils";
+import { GameDialog } from "./GameDialog";
 
 const DIFFICULTIES: { value: Difficulty; label: string }[] = [
   { value: 1, label: "1 suit" },
@@ -35,12 +36,12 @@ function StatsDialogInner() {
         <Tabs.List className="relative flex gap-2 rounded-full bg-black/35 p-1">
           {DIFFICULTIES.map((d) => (
             <Tabs.Tab
-              className={[
+              className={cn(
                 "flex-1 rounded-full px-4 py-2 font-medium text-[var(--color-ink-dim)] text-sm transition-colors",
                 "hover:text-[var(--color-ink)]",
                 "data-[selected]:bg-[var(--color-gold)]/95 data-[selected]:text-[#1b1305]",
-                "focus-visible:outline-2 focus-visible:outline-[var(--color-gold)]",
-              ].join(" ")}
+                "focus-visible:outline-2 focus-visible:outline-[var(--color-gold)]"
+              )}
               key={d.value}
               value={String(d.value)}
             >

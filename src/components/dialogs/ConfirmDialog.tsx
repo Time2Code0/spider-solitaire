@@ -2,21 +2,13 @@
 
 import { Button } from "@/components/ui/Button";
 import { useGameStore } from "@/game/store";
-import { GameDialog } from "./DialogPrimitive";
+import { GameDialog } from "./GameDialog";
 
 export function ConfirmDialog() {
   const confirmNewGameOpen = useGameStore((s) =>
     s.openDialogs.includes("confirm-new-game")
   );
-  const confirmResetOpen = useGameStore((s) =>
-    s.openDialogs.includes("confirm-reset-stats")
-  );
-  return (
-    <>
-      {confirmNewGameOpen ? <ConfirmNewGame /> : null}
-      {confirmResetOpen ? <ConfirmResetStats /> : null}
-    </>
-  );
+  return confirmNewGameOpen ? <ConfirmNewGame /> : null;
 }
 
 function ConfirmNewGame() {
@@ -49,39 +41,6 @@ function ConfirmNewGame() {
       <p className="text-[var(--color-ink-dim)] text-sm leading-relaxed">
         Starting a new game will abandon the one in progress. The abandoned game
         will count as a loss in your statistics.
-      </p>
-    </GameDialog>
-  );
-}
-
-function ConfirmResetStats() {
-  const closeDialog = useGameStore((s) => s.closeDialog);
-  const resetStats = useGameStore((s) => s.resetStats);
-
-  const onCancel = () => closeDialog("confirm-reset-stats");
-  const onConfirm = () => {
-    resetStats();
-    closeDialog("confirm-reset-stats");
-  };
-
-  return (
-    <GameDialog
-      footer={
-        <>
-          <Button onClick={onCancel} variant="ghost">
-            Cancel
-          </Button>
-          <Button onClick={onConfirm} variant="danger">
-            Reset statistics
-          </Button>
-        </>
-      }
-      name="confirm-reset-stats"
-      title="Reset all statistics?"
-    >
-      <p className="text-[var(--color-ink-dim)] text-sm leading-relaxed">
-        This will permanently clear your leaderboard, averages, and win-rate
-        across all difficulties. This cannot be undone.
       </p>
     </GameDialog>
   );

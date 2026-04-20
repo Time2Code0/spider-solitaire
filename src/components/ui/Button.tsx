@@ -1,6 +1,7 @@
 "use client";
 
 import type { Ref } from "react";
+import { cn } from "@/lib/utils";
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -38,15 +39,15 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
-      className={[
+      className={cn(
         "inline-flex items-center justify-center gap-2 rounded-full transition-all",
         "focus-visible:outline-2 focus-visible:outline-[var(--color-gold)] focus-visible:outline-offset-2",
         "disabled:cursor-not-allowed disabled:opacity-40",
-        fullWidth ? "w-full" : "",
+        fullWidth && "w-full",
         variantClasses[variant],
         sizeClasses[size],
-        className ?? "",
-      ].join(" ")}
+        className
+      )}
       ref={ref}
       type={type}
       {...rest}

@@ -1,10 +1,10 @@
 "use client";
 
-import { Radio } from "@base-ui-components/react/radio";
-import { RadioGroup } from "@base-ui-components/react/radio-group";
-import { Switch } from "@base-ui-components/react/switch";
+import { HoldToConfirmButton } from "@/components/ui/HoldToConfirmButton";
+import { RadioGroup, RadioGroupCard } from "@/components/ui/RadioGroup";
+import { Switch } from "@/components/ui/Switch";
 import {
-  CARD_BACK_IDS,
+  CARD_BACK_GROUPS,
   CARD_BACKS,
   CARD_FRONT_IDS,
   CARD_FRONTS,
@@ -18,7 +18,7 @@ import type {
   Difficulty,
   SoundsMode,
 } from "@/game/types";
-import { GameDialog } from "./DialogPrimitive";
+import { GameDialog } from "./GameDialog";
 
 const DIFFICULTIES: { value: Difficulty; label: string; hint: string }[] = [
   { value: 1, label: "1 suit", hint: "Easiest" },
@@ -37,7 +37,7 @@ export function SettingsDialog() {
 function SettingsDialogInner() {
   const settings = useGameStore((s) => s.settings);
   const updateSettings = useGameStore((s) => s.updateSettings);
-  const openDialog = useGameStore((s) => s.openDialog);
+  const resetStats = useGameStore((s) => s.resetStats);
 
   return (
     <GameDialog
@@ -58,7 +58,7 @@ function SettingsDialogInner() {
             value={String(settings.defaultDifficulty)}
           >
             {DIFFICULTIES.map((d) => (
-              <RadioCard
+              <DifficultyCard
                 description={d.hint}
                 key={d.value}
                 label={d.label}
@@ -84,14 +84,27 @@ function SettingsDialogInner() {
 
         <Section label="Card back">
           <RadioGroup
-            className="grid grid-cols-4 gap-3"
+            className="flex flex-col gap-5"
             onValueChange={(value) =>
               updateSettings({ cardBack: value as CardBackId })
             }
             value={settings.cardBack}
           >
-            {CARD_BACK_IDS.map((id) => (
-              <CardBackRadio back={id} front={settings.cardFront} key={id} />
+            {CARD_BACK_GROUPS.map((group) => (
+              <div className="space-y-2" key={group.id}>
+                <div className="font-medium text-[var(--color-ink-muted)] text-xs uppercase tracking-[0.18em]">
+                  {group.label}
+                </div>
+                <div className="grid grid-cols-4 gap-3">
+                  {group.backs.map((id) => (
+                    <CardBackRadio
+                      back={id}
+                      front={settings.cardFront}
+                      key={id}
+                    />
+                  ))}
+                </div>
+              </div>
             ))}
           </RadioGroup>
         </Section>
@@ -121,13 +134,23 @@ function SettingsDialogInner() {
         </Section>
 
         <Section label="Statistics">
-          <button
-            className="text-left text-red-400 text-sm underline-offset-2 hover:text-red-300 hover:underline"
-            onClick={() => openDialog("confirm-reset-stats")}
-            type="button"
-          >
-            Reset all statistics…
-          </button>
+          <div className="flex flex-col gap-3 rounded-xl border border-white/5 bg-black/25 p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="font-medium text-[var(--color-ink)] text-sm">
+                Reset all statistics
+              </div>
+              <p className="text-[var(--color-ink-muted)] text-xs leading-relaxed">
+                Clears leaderboards, averages, and win-rate across every
+                difficulty. This cannot be undone.
+              </p>
+            </div>
+            <HoldToConfirmButton
+              holdingLabel="Keep holding…"
+              label="Hold to reset"
+              onConfirm={resetStats}
+              successLabel="Statistics cleared"
+            />
+          </div>
         </Section>
       </div>
     </GameDialog>
@@ -151,7 +174,7 @@ function Section({
   );
 }
 
-function RadioCard({
+function DifficultyCard({
   value,
   label,
   description,
@@ -161,23 +184,14 @@ function RadioCard({
   description?: string;
 }) {
   return (
-    <Radio.Root
-      className={[
-        "group flex cursor-pointer flex-col gap-1 rounded-xl border px-4 py-3",
-        "border-white/10 bg-black/30 text-[var(--color-ink)] transition-colors",
-        "hover:border-[var(--color-gold)]/40 hover:bg-black/40",
-        "data-[checked]:border-[var(--color-gold)] data-[checked]:bg-[var(--color-gold)]/15",
-      ].join(" ")}
-      value={value}
-    >
+    <RadioGroupCard value={value}>
       <span className="font-semibold text-base">{label}</span>
       {description ? (
         <span className="text-[var(--color-ink-muted)] text-xs">
           {description}
         </span>
       ) : null}
-      <Radio.Indicator className="absolute" />
-    </Radio.Root>
+    </RadioGroupCard>
   );
 }
 
@@ -185,15 +199,7 @@ function CardFrontRadio({ front }: { front: CardFrontId }) {
   const meta = CARD_FRONTS[front];
   const desc = describeFront(front, 1, "S");
   return (
-    <Radio.Root
-      className={[
-        "group flex cursor-pointer flex-col items-center gap-2 rounded-xl border p-4",
-        "border-white/10 bg-black/30 transition-colors",
-        "hover:border-[var(--color-gold)]/40 hover:bg-black/40",
-        "data-[checked]:border-[var(--color-gold)] data-[checked]:bg-[var(--color-gold)]/15",
-      ].join(" ")}
-      value={front}
-    >
+    <RadioGroupCard className="items-center p-4" value={front}>
       <div className="card-surface" style={{ width: 70, height: 102 }}>
         {desc.mode === "img" ? (
           <img
@@ -216,7 +222,7 @@ function CardFrontRadio({ front }: { front: CardFrontId }) {
           </svg>
         )}
       </div>
-      <div className="text-center">
+      <div className="mt-1 text-center">
         <div className="font-semibold text-[var(--color-ink)] text-sm">
           {meta.label}
         </div>
@@ -224,7 +230,7 @@ function CardFrontRadio({ front }: { front: CardFrontId }) {
           {meta.description}
         </div>
       </div>
-    </Radio.Root>
+    </RadioGroupCard>
   );
 }
 
@@ -238,15 +244,7 @@ function CardBackRadio({
   const meta = CARD_BACKS[back];
   const desc = describeBack(front, back);
   return (
-    <Radio.Root
-      className={[
-        "group flex cursor-pointer flex-col items-center gap-2 rounded-xl border p-3",
-        "border-white/10 bg-black/30 transition-colors",
-        "hover:border-[var(--color-gold)]/40 hover:bg-black/40",
-        "data-[checked]:border-[var(--color-gold)] data-[checked]:bg-[var(--color-gold)]/15",
-      ].join(" ")}
-      value={back}
-    >
+    <RadioGroupCard className="items-center p-3" value={back}>
       <div
         className="card-surface card-surface--facedown"
         style={{ width: 60, height: 86 }}
@@ -259,10 +257,10 @@ function CardBackRadio({
           src={desc.src}
         />
       </div>
-      <div className="text-center font-medium text-[var(--color-ink)] text-xs">
+      <div className="mt-1 text-center font-medium text-[var(--color-ink)] text-xs">
         {meta.label}
       </div>
-    </Radio.Root>
+    </RadioGroupCard>
   );
 }
 
@@ -289,21 +287,7 @@ function ToggleRow({
           </div>
         ) : null}
       </div>
-      <Switch.Root
-        checked={checked}
-        className={[
-          "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full",
-          "bg-white/15 transition-colors data-[checked]:bg-[var(--color-gold)]",
-        ].join(" ")}
-        onCheckedChange={onCheckedChange}
-      >
-        <Switch.Thumb
-          className={[
-            "pointer-events-none ml-0.5 inline-block size-5 rounded-full bg-white shadow",
-            "transition-transform data-[checked]:translate-x-5",
-          ].join(" ")}
-        />
-      </Switch.Root>
+      <Switch checked={checked} onCheckedChange={onCheckedChange} />
     </div>
   );
 }

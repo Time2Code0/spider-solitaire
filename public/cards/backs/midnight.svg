@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 169 244" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <pattern id="ocean-diag" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="10" height="10" fill="#0d2546"/>
+      <path d="M0 5h10" stroke="#1a3d6e" stroke-width="1"/>
+      <path d="M5 0v10" stroke="#153464" stroke-width="0.5" opacity="0.7"/>
+    </pattern>
+    <linearGradient id="ocean-sheen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.06"/>
+      <stop offset="0.5" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0.05"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="165" height="240" rx="14" ry="14" fill="#061229"/>
+  <rect x="7" y="7" width="155" height="230" rx="10" ry="10" fill="url(#ocean-diag)"/>
+  <rect x="7" y="7" width="155" height="230" rx="10" ry="10" fill="url(#ocean-sheen)"/>
+  <rect x="7" y="7" width="155" height="230" rx="10" ry="10" fill="none" stroke="#b9d4ef" stroke-width="1" opacity="0.5"/>
+  <g opacity="0.9" transform="translate(84.5 122)">
+    <circle r="44" fill="none" stroke="#b9d4ef" stroke-width="0.8" opacity="0.35"/>
+    <circle r="30" fill="none" stroke="#b9d4ef" stroke-width="0.8" opacity="0.5"/>
+    <path d="M-20 -20 L0 -4 L20 -20 L4 0 L20 20 L0 4 L-20 20 L-4 0 Z" fill="#b9d4ef" opacity="0.28"/>
+    <path d="M0 -40 L5 0 L-5 0 Z" fill="#dbe9f7" opacity="0.5"/>
+    <path d="M0 40 L5 0 L-5 0 Z" fill="#dbe9f7" opacity="0.5"/>
+    <path d="M-40 0 L0 5 L0 -5 Z" fill="#dbe9f7" opacity="0.5"/>
+    <path d="M40 0 L0 5 L0 -5 Z" fill="#dbe9f7" opacity="0.5"/>
+    <circle r="5" fill="#e8f0fb"/>
+  </g>
+</svg>

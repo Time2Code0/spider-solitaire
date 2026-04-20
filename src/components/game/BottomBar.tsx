@@ -13,7 +13,9 @@ import {
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { Tooltip } from "@/components/ui/Tooltip";
+import { isWon } from "@/game/engine";
 import { selectCanUndo, selectCurrentGame, useGameStore } from "@/game/store";
+import { DevTools } from "./DevTools";
 
 export function BottomBar() {
   const present = useGameStore(selectCurrentGame);
@@ -28,7 +30,12 @@ export function BottomBar() {
   const elapsed = present?.elapsedMs ?? 0;
 
   const handleNewGame = () => {
-    if (!present || present.moves === 0 || !settings.confirmNewGame) {
+    if (
+      !present ||
+      present.moves === 0 ||
+      isWon(present) ||
+      !settings.confirmNewGame
+    ) {
       startNewGame();
       return;
     }
@@ -40,8 +47,8 @@ export function BottomBar() {
       className="fixed right-0 bottom-0 left-0 z-40 flex items-center justify-between gap-6 border-white/10 border-t bg-black/55 px-8 backdrop-blur-xl"
       style={{ height: "var(--bottom-bar-h)" }}
     >
-      <BaseTooltip.Provider closeDelay={80} delay={350}>
-        <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3">
+        <BaseTooltip.Provider closeDelay={80} delay={350}>
           <Tooltip label="Settings">
             <IconButton
               icon={SettingsIcon}
@@ -72,10 +79,16 @@ export function BottomBar() {
               onClick={cycleHint}
             />
           </Tooltip>
-        </div>
-      </BaseTooltip.Provider>
+        </BaseTooltip.Provider>
+        {process.env.NODE_ENV === "development" && <DevTools />}
+      </div>
 
-      <Button onClick={handleNewGame} size="lg" variant="primary">
+      <Button
+        className="ease-out active:scale-97"
+        onClick={handleNewGame}
+        size="lg"
+        variant="primary"
+      >
         <Play aria-hidden className="size-5" strokeWidth={2} />
         New game
       </Button>

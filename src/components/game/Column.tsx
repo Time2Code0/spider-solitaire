@@ -3,6 +3,7 @@
 import { AnimatePresence } from "motion/react";
 import { deepestMovableIndex } from "@/game/engine";
 import type { CardBackId, CardFrontId, Card as CardModel } from "@/game/types";
+import { cn } from "@/lib/utils";
 import { Card } from "./Card";
 
 const FANOUT_UP = 0.27;
@@ -53,9 +54,7 @@ export function Column(props: ColumnProps) {
   return (
     <section
       aria-label={`Column ${columnIndex + 1}, ${cards.length} cards`}
-      className={["relative select-none", invalidFlash ? "column-shake" : ""]
-        .join(" ")
-        .trim()}
+      className={cn("relative select-none", invalidFlash && "column-shake")}
       data-column-index={columnIndex}
       style={{
         width: "var(--card-w)",
@@ -65,10 +64,10 @@ export function Column(props: ColumnProps) {
     >
       <button
         aria-label={`Drop target for column ${columnIndex + 1}`}
-        className={[
+        className={cn(
           "card-empty-slot absolute top-0 left-0 cursor-pointer",
-          emptySlotHinted ? "pulse-hint" : "",
-        ].join(" ")}
+          emptySlotHinted && "pulse-hint"
+        )}
         key={emptySlotHinted ? `hint-${hintPulseKey}` : undefined}
         onClick={() => onTargetClick(columnIndex)}
         type="button"

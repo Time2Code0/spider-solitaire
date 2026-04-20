@@ -5,7 +5,7 @@ import { formatElapsed } from "@/components/game/useTimer";
 import { Button } from "@/components/ui/Button";
 import { isNewBest } from "@/game/stats";
 import { selectCurrentGame, useGameStore } from "@/game/store";
-import { GameDialog } from "./DialogPrimitive";
+import { GameDialog } from "./GameDialog";
 
 export function EndOfGameDialog() {
   const open = useGameStore((s) => s.openDialogs.includes("end-of-game"));
@@ -47,10 +47,15 @@ function EndOfGameDialogInner() {
     <GameDialog
       footer={
         <>
-          <Button onClick={onDone} variant="ghost">
+          <Button onClick={onDone} size="lg" variant="ghost">
             Close
           </Button>
-          <Button onClick={onPlayAgain} size="lg" variant="primary">
+          <Button
+            className="ease-out active:scale-97"
+            onClick={onPlayAgain}
+            size="lg"
+            variant="primary"
+          >
             <RefreshCcw aria-hidden className="size-5" />
             Play again
           </Button>

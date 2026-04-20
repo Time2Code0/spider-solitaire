@@ -2,6 +2,7 @@
 
 import type { LucideIcon } from "lucide-react";
 import type { Ref } from "react";
+import { cn } from "@/lib/utils";
 
 export interface IconButtonProps
   extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children"> {
@@ -37,14 +38,14 @@ export function IconButton({
   return (
     <button
       aria-label={label}
-      className={[
+      className={cn(
         "flex items-center justify-center rounded-full transition-colors",
         "focus-visible:outline-2 focus-visible:outline-[var(--color-gold)] focus-visible:outline-offset-2",
         "disabled:cursor-not-allowed disabled:opacity-40",
         toneClasses[tone],
         sizeClasses[size],
-        className ?? "",
-      ].join(" ")}
+        className
+      )}
       ref={ref}
       type="button"
       {...rest}
