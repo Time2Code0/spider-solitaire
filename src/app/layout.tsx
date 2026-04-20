@@ -1,14 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
@@ -25,9 +20,29 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={geistSans.variable}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="bg-background text-foreground flex min-h-screen flex-col overflow-x-hidden scroll-smooth font-sans text-base antialiased">
+        {children}
+        <TailwindIndicator />
+      </body>
     </html>
+  );
+}
+
+function TailwindIndicator() {
+  if (process.env.NODE_ENV === "production") {
+    return null;
+  }
+
+  return (
+    <div className="bg-foreground text-background fixed bottom-1 left-1 z-50 flex size-6 items-center justify-center rounded-full p-3 font-mono text-xs">
+      <div className="block sm:hidden">xs</div>
+      <div className="hidden sm:block md:hidden">sm</div>
+      <div className="hidden md:block lg:hidden">md</div>
+      <div className="hidden lg:block xl:hidden">lg</div>
+      <div className="hidden xl:block 2xl:hidden">xl</div>
+      <div className="hidden 2xl:block">2xl</div>
+    </div>
   );
 }
