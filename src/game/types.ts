@@ -54,7 +54,16 @@ export type CardBackId =
   | "royal";
 export type SoundsMode = "on" | "off";
 
+export type BackgroundColor = "green" | "red" | "blue";
+export type BackgroundStyle = "modern" | "vintage" | "classic";
+
+export interface Background {
+  color: BackgroundColor;
+  style: BackgroundStyle;
+}
+
 export interface Settings {
+  background: Background;
   cardBack: CardBackId;
   cardFront: CardFrontId;
   confirmNewGame: boolean;

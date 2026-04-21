@@ -4,6 +4,10 @@ import { HoldToConfirmButton } from "@/components/ui/HoldToConfirmButton";
 import { RadioGroup, RadioGroupCard } from "@/components/ui/RadioGroup";
 import { Switch } from "@/components/ui/Switch";
 import {
+  BACKGROUND_COLOR_IDS,
+  BACKGROUND_COLORS,
+  BACKGROUND_STYLE_IDS,
+  BACKGROUND_STYLES,
   CARD_BACK_GROUPS,
   CARD_BACKS,
   CARD_FRONT_IDS,
@@ -13,6 +17,8 @@ import {
 } from "@/game/decks";
 import { useGameStore } from "@/game/store";
 import type {
+  BackgroundColor,
+  BackgroundStyle,
   CardBackId,
   CardFrontId,
   Difficulty,
@@ -107,6 +113,61 @@ function SettingsDialogInner() {
               </div>
             ))}
           </RadioGroup>
+        </Section>
+
+        <Section label="Background">
+          <div className="space-y-5">
+            <div className="space-y-2">
+              <div className="font-medium text-ink-muted text-xs uppercase tracking-[0.18em]">
+                Color
+              </div>
+              <RadioGroup
+                className="grid grid-cols-3 gap-3"
+                onValueChange={(value) =>
+                  updateSettings({
+                    background: {
+                      ...settings.background,
+                      color: value as BackgroundColor,
+                    },
+                  })
+                }
+                value={settings.background.color}
+              >
+                {BACKGROUND_COLOR_IDS.map((id) => (
+                  <BackgroundColorRadio
+                    color={id}
+                    key={id}
+                    style={settings.background.style}
+                  />
+                ))}
+              </RadioGroup>
+            </div>
+            <div className="space-y-2">
+              <div className="font-medium text-ink-muted text-xs uppercase tracking-[0.18em]">
+                Style
+              </div>
+              <RadioGroup
+                className="grid grid-cols-3 gap-3"
+                onValueChange={(value) =>
+                  updateSettings({
+                    background: {
+                      ...settings.background,
+                      style: value as BackgroundStyle,
+                    },
+                  })
+                }
+                value={settings.background.style}
+              >
+                {BACKGROUND_STYLE_IDS.map((id) => (
+                  <BackgroundStyleRadio
+                    color={settings.background.color}
+                    key={id}
+                    style={id}
+                  />
+                ))}
+              </RadioGroup>
+            </div>
+          </div>
         </Section>
 
         <Section label="Interface">
@@ -253,6 +314,62 @@ function CardBackRadio({
       </div>
       <div className="mt-1 text-center font-medium text-ink text-xs">
         {meta.label}
+      </div>
+    </RadioGroupCard>
+  );
+}
+
+function BackgroundPreview({
+  color,
+  style,
+  className = "",
+}: {
+  color: BackgroundColor;
+  style: BackgroundStyle;
+  className?: string;
+}) {
+  return (
+    <div
+      aria-hidden
+      className={`felt-backdrop overflow-hidden rounded-lg border border-white/10 ${className}`}
+      data-bg-color={color}
+      data-bg-style={style}
+    />
+  );
+}
+
+function BackgroundColorRadio({
+  color,
+  style,
+}: {
+  color: BackgroundColor;
+  style: BackgroundStyle;
+}) {
+  const meta = BACKGROUND_COLORS[color];
+  return (
+    <RadioGroupCard className="items-center p-3" value={color}>
+      <BackgroundPreview className="h-14 w-full" color={color} style={style} />
+      <div className="mt-1 text-center font-medium text-ink text-xs">
+        {meta.label}
+      </div>
+    </RadioGroupCard>
+  );
+}
+
+function BackgroundStyleRadio({
+  color,
+  style,
+}: {
+  color: BackgroundColor;
+  style: BackgroundStyle;
+}) {
+  const meta = BACKGROUND_STYLES[style];
+  return (
+    <RadioGroupCard className="items-center p-3" value={style}>
+      <BackgroundPreview className="h-16 w-full" color={color} style={style} />
+      <div className="mt-1 text-center">
+        <div className="font-medium text-ink text-sm">{meta.label}</div>
+        <div className="text-ink-muted text-xs">{meta.description}</div>
       </div>
     </RadioGroupCard>
   );

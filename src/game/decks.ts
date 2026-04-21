@@ -1,4 +1,11 @@
-import type { CardBackId, CardFrontId, Rank, Suit } from "./types";
+import type {
+  BackgroundColor,
+  BackgroundStyle,
+  CardBackId,
+  CardFrontId,
+  Rank,
+  Suit,
+} from "./types";
 import { RANK_CODES, SUIT_NAMES } from "./types";
 
 export interface CardFrontMeta {
@@ -161,3 +168,48 @@ export const CARD_FRONT_IDS: CardFrontId[] = ["classic", "vintage", "modern"];
 export const CARD_BACK_IDS: CardBackId[] = CARD_BACK_GROUPS.flatMap(
   (group) => group.backs
 );
+
+export interface BackgroundColorMeta {
+  id: BackgroundColor;
+  label: string;
+  /** Representative mid-tone used for color swatches. */
+  swatch: string;
+}
+
+export const BACKGROUND_COLORS: Record<BackgroundColor, BackgroundColorMeta> = {
+  green: { id: "green", label: "Emerald", swatch: "#0e4130" },
+  red: { id: "red", label: "Burgundy", swatch: "#5a141d" },
+  blue: { id: "blue", label: "Sapphire", swatch: "#122e5f" },
+};
+
+export const BACKGROUND_COLOR_IDS: BackgroundColor[] = ["green", "red", "blue"];
+
+export interface BackgroundStyleMeta {
+  description: string;
+  id: BackgroundStyle;
+  label: string;
+}
+
+export const BACKGROUND_STYLES: Record<BackgroundStyle, BackgroundStyleMeta> = {
+  modern: {
+    id: "modern",
+    label: "Modern",
+    description: "Smooth, minimal felt",
+  },
+  vintage: {
+    id: "vintage",
+    label: "Vintage",
+    description: "Suit-emblem tiling",
+  },
+  classic: {
+    id: "classic",
+    label: "Classic",
+    description: "Woven card-table cloth",
+  },
+};
+
+export const BACKGROUND_STYLE_IDS: BackgroundStyle[] = [
+  "modern",
+  "vintage",
+  "classic",
+];
