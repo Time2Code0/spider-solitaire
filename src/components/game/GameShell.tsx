@@ -214,6 +214,8 @@ function InnerShell() {
     <DragProvider value={dragContextValue}>
       <main
         className="felt-backdrop flex min-h-screen flex-col pb-(--bottom-bar-h)"
+        data-bg-color={settings.background.color}
+        data-bg-style={settings.background.style}
         ref={dragContainerRef}
       >
         <div className="flex-1 px-8 py-6">

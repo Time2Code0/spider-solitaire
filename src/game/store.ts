@@ -76,6 +76,7 @@ const defaultSettings: Settings = {
   cardBack: "crimson",
   sounds: "off",
   confirmNewGame: true,
+  background: { color: "green", style: "modern" },
 };
 
 function pushHistory(past: GameState[], state: GameState): GameState[] {
@@ -434,7 +435,7 @@ export const useGameStore = create<GameStore>()(
     }),
     {
       name: "spider-solitaire@1",
-      version: 3,
+      version: 4,
       partialize: (state) => ({
         present: state.present,
         past: state.past,
@@ -456,6 +457,10 @@ export const useGameStore = create<GameStore>()(
           if (legacy === "slate") {
             state.settings.cardBack = "royal";
           }
+        }
+        if (state?.settings && version < 4) {
+          // Backfill the new `background` setting for existing installs.
+          state.settings.background = defaultSettings.background;
         }
         return state as unknown;
       },
