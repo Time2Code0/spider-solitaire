@@ -43,10 +43,7 @@ export function BottomBar() {
   };
 
   return (
-    <div
-      className="fixed right-0 bottom-0 left-0 z-40 flex items-center justify-between gap-6 border-white/10 border-t bg-black/55 px-8 backdrop-blur-xl"
-      style={{ height: "var(--bottom-bar-h)" }}
-    >
+    <div className="fixed right-0 bottom-0 left-0 z-40 flex h-(--bottom-bar-h) items-center justify-between gap-6 border-white/10 border-t bg-black/55 px-8 backdrop-blur-xl">
       <div className="flex items-center gap-3">
         <BaseTooltip.Provider closeDelay={80} delay={350}>
           <Tooltip label="Settings">
@@ -156,11 +153,11 @@ function Stat({
 }) {
   return (
     <div className="flex flex-col items-end">
-      <div className="flex items-center gap-1.5 font-medium text-[var(--color-ink-muted)] text-xs uppercase tracking-widest">
+      <div className="flex items-center gap-1.5 font-medium text-ink-muted text-xs uppercase tracking-widest">
         {icon}
         {label}
       </div>
-      <div className="font-semibold text-2xl text-[var(--color-ink)] leading-none">
+      <div className="font-semibold text-2xl text-ink leading-none">
         {children}
       </div>
     </div>

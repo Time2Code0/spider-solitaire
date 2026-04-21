@@ -92,7 +92,7 @@ function SettingsDialogInner() {
           >
             {CARD_BACK_GROUPS.map((group) => (
               <div className="space-y-2" key={group.id}>
-                <div className="font-medium text-[var(--color-ink-muted)] text-xs uppercase tracking-[0.18em]">
+                <div className="font-medium text-ink-muted text-xs uppercase tracking-[0.18em]">
                   {group.label}
                 </div>
                 <div className="grid grid-cols-4 gap-3">
@@ -136,10 +136,10 @@ function SettingsDialogInner() {
         <Section label="Statistics">
           <div className="flex flex-col gap-3 rounded-xl border border-white/5 bg-black/25 p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <div className="font-medium text-[var(--color-ink)] text-sm">
+              <div className="font-medium text-ink text-sm">
                 Reset all statistics
               </div>
-              <p className="text-[var(--color-ink-muted)] text-xs leading-relaxed">
+              <p className="text-ink-muted text-xs leading-relaxed">
                 Clears leaderboards, averages, and win-rate across every
                 difficulty. This cannot be undone.
               </p>
@@ -166,7 +166,7 @@ function Section({
 }) {
   return (
     <section>
-      <h3 className="mb-3 font-medium text-[var(--color-ink-dim)] text-xs uppercase tracking-[0.2em]">
+      <h3 className="mb-3 font-medium text-ink-dim text-xs uppercase tracking-[0.2em]">
         {label}
       </h3>
       {children}
@@ -187,9 +187,7 @@ function DifficultyCard({
     <RadioGroupCard value={value}>
       <span className="font-semibold text-base">{label}</span>
       {description ? (
-        <span className="text-[var(--color-ink-muted)] text-xs">
-          {description}
-        </span>
+        <span className="text-ink-muted text-xs">{description}</span>
       ) : null}
     </RadioGroupCard>
   );
@@ -223,12 +221,8 @@ function CardFrontRadio({ front }: { front: CardFrontId }) {
         )}
       </div>
       <div className="mt-1 text-center">
-        <div className="font-semibold text-[var(--color-ink)] text-sm">
-          {meta.label}
-        </div>
-        <div className="text-[var(--color-ink-muted)] text-xs">
-          {meta.description}
-        </div>
+        <div className="font-semibold text-ink text-sm">{meta.label}</div>
+        <div className="text-ink-muted text-xs">{meta.description}</div>
       </div>
     </RadioGroupCard>
   );
@@ -257,7 +251,7 @@ function CardBackRadio({
           src={desc.src}
         />
       </div>
-      <div className="mt-1 text-center font-medium text-[var(--color-ink)] text-xs">
+      <div className="mt-1 text-center font-medium text-ink text-xs">
         {meta.label}
       </div>
     </RadioGroupCard>
@@ -278,13 +272,9 @@ function ToggleRow({
   return (
     <div className="flex items-center justify-between gap-4">
       <div>
-        <div className="font-medium text-[var(--color-ink)] text-sm">
-          {label}
-        </div>
+        <div className="font-medium text-ink text-sm">{label}</div>
         {description ? (
-          <div className="text-[var(--color-ink-muted)] text-xs">
-            {description}
-          </div>
+          <div className="text-ink-muted text-xs">{description}</div>
         ) : null}
       </div>
       <Switch checked={checked} onCheckedChange={onCheckedChange} />

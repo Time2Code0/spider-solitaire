@@ -14,11 +14,10 @@ export interface IconButtonProps
 }
 
 const toneClasses: Record<NonNullable<IconButtonProps["tone"]>, string> = {
-  ghost:
-    "bg-black/30 text-[var(--color-ink)] hover:bg-black/45 border border-white/10",
+  ghost: "bg-black/30 text-ink hover:bg-black/45 border border-white/10",
   solid:
-    "bg-[var(--color-felt-bright)] text-[var(--color-ink)] hover:bg-[var(--color-felt-highlight)] border border-[var(--color-felt-highlight)]",
-  gold: "bg-[var(--color-gold)]/95 text-[#1b1305] hover:bg-[var(--color-gold)] border border-[var(--color-gold)]",
+    "bg-felt-bright text-ink hover:bg-felt-highlight border border-felt-highlight",
+  gold: "bg-gold/95 text-[#1b1305] hover:bg-gold border border-gold",
 };
 
 const sizeClasses: Record<NonNullable<IconButtonProps["size"]>, string> = {
@@ -40,7 +39,7 @@ export function IconButton({
       aria-label={label}
       className={cn(
         "flex items-center justify-center rounded-full transition-colors",
-        "focus-visible:outline-2 focus-visible:outline-[var(--color-gold)] focus-visible:outline-offset-2",
+        "focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2",
         "disabled:cursor-not-allowed disabled:opacity-40",
         toneClasses[tone],
         sizeClasses[size],

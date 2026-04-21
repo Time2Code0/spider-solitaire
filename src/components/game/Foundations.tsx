@@ -22,8 +22,8 @@ export function Foundations({ foundations, front }: FoundationsProps) {
 
   return (
     <div className="flex items-center gap-3">
-      <div className="text-left font-medium text-[var(--color-ink-dim)] text-xs uppercase tracking-widest">
-        <div className="text-[var(--color-ink)]/90">Suits</div>
+      <div className="text-left font-medium text-ink-dim text-xs uppercase tracking-widest">
+        <div className="text-ink/90">Suits</div>
         <div className="tabular-nums">
           {completed}/{TOTAL_FOUNDATION_SLOTS}
         </div>
