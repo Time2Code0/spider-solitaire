@@ -434,7 +434,7 @@ export const useGameStore = create<GameStore>()(
     }),
     {
       name: "spider-solitaire@1",
-      version: 2,
+      version: 3,
       partialize: (state) => ({
         present: state.present,
         past: state.past,
@@ -449,6 +449,12 @@ export const useGameStore = create<GameStore>()(
             state.settings.cardBack = "crimson";
           } else if (legacy === "blue") {
             state.settings.cardBack = "ocean";
+          }
+        }
+        if (state?.settings && version < 3) {
+          const legacy = state.settings.cardBack as CardBackId | "slate";
+          if (legacy === "slate") {
+            state.settings.cardBack = "royal";
           }
         }
         return state as unknown;

@@ -64,11 +64,6 @@ export const CARD_BACKS: Record<CardBackId, CardBackMeta> = {
     label: "Forest",
     src: () => "/cards/backs/forest.svg",
   },
-  slate: {
-    id: "slate",
-    label: "Slate",
-    src: () => "/cards/backs/slate.svg",
-  },
   rosewood: {
     id: "rosewood",
     label: "Rosewood",
@@ -79,12 +74,17 @@ export const CARD_BACKS: Record<CardBackId, CardBackMeta> = {
     label: "Midnight",
     src: () => "/cards/backs/midnight.svg",
   },
+  royal: {
+    id: "royal",
+    label: "Royal",
+    src: () => "/cards/backs/royal.svg",
+  },
 };
 
 export interface CardBackGroup {
+  backs: CardBackId[];
   id: "classic" | "modern";
   label: string;
-  backs: CardBackId[];
 }
 
 export const CARD_BACK_GROUPS: CardBackGroup[] = [
@@ -96,7 +96,7 @@ export const CARD_BACK_GROUPS: CardBackGroup[] = [
   {
     id: "modern",
     label: "Modern",
-    backs: ["forest", "slate", "rosewood", "midnight"],
+    backs: ["forest", "rosewood", "midnight", "royal"],
   },
 ];
 

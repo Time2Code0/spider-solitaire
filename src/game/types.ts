@@ -49,9 +49,9 @@ export type CardBackId =
   | "crimson"
   | "ocean"
   | "forest"
-  | "slate"
   | "rosewood"
-  | "midnight";
+  | "midnight"
+  | "royal";
 export type SoundsMode = "on" | "off";
 
 export interface Settings {
