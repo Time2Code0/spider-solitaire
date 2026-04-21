@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+> [!WARNING]
+> This application was fully vibe coded using `Opus 4.7 Max Thinking`.
+> I have not fully reviewed all of the generated code yet, and I plan to do a proper pass once I have some free time. In the words of Todd Howard: It just works™.
 
-## Getting Started
+<h1 align="center">Spider Solitaire</h1>
 
-First, run the development server:
+<p align="center">
+  A modern Spider Solitaire game built for the browser.
+  <br />
+  Smooth interactions, polished visuals, customizable cards, and persistent stats.
+</p>
+
+![Spider Solitaire screenshot](./screenshot.png)
+
+<p align="center">
+  <a href="#introduction"><strong>Introduction</strong></a>
+  ·
+  <a href="#features"><strong>Features</strong></a>
+  ·
+  <a href="#tech-stack"><strong>Tech Stack</strong></a>
+  ·
+  <a href="#local-development"><strong>Local Development</strong></a>
+</p>
+
+## Introduction
+
+Spider Solitaire is a browser-based take on the classic card game, designed to feel fast, tactile, and satisfying to play on larger screens. The app combines traditional Spider Solitaire rules with a more refined interface, built-in progression tracking, and a flexible visual theme system for cards and feedback.
+
+## Features
+
+- Classic Spider Solitaire gameplay with `1-suit`, `2-suit`, and `4-suit` modes
+- Undo support and cycling hints for smoother play sessions
+- Persistent local game state so progress and preferences survive refreshes
+- Detailed statistics with win rate, averages, and best runs by difficulty
+- Customizable card fronts, card backs, and sound settings
+
+## Tech Stack
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Zustand
+- Motion React (formerly Framer Motion)
+
+## Local Development
+
+Install dependencies and start the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Then open [http://localhost:3000](http://localhost:3000).
