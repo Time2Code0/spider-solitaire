@@ -23,8 +23,8 @@ export function Stock(props: StockProps) {
 
   return (
     <div className="flex items-center gap-3">
-      <div className="text-right font-medium text-[var(--color-ink-dim)] text-xs uppercase tracking-widest">
-        <div className="text-[var(--color-ink)]/90">Stock</div>
+      <div className="text-right font-medium text-ink-dim text-xs uppercase tracking-widest">
+        <div className="text-ink/90">Stock</div>
         <div className="tabular-nums">{remaining} left</div>
       </div>
       <button

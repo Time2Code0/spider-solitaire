@@ -37,10 +37,10 @@ function StatsDialogInner() {
           {DIFFICULTIES.map((d) => (
             <Tabs.Tab
               className={cn(
-                "flex-1 rounded-full px-4 py-2 font-medium text-[var(--color-ink-dim)] text-sm transition-colors",
-                "hover:text-[var(--color-ink)]",
-                "data-[selected]:bg-[var(--color-gold)]/95 data-[selected]:text-[#1b1305]",
-                "focus-visible:outline-2 focus-visible:outline-[var(--color-gold)]"
+                "flex-1 rounded-full px-4 py-2 font-medium text-ink-dim text-sm transition-colors",
+                "hover:text-ink",
+                "data-[selected]:bg-gold/95 data-[selected]:text-[#1b1305]",
+                "focus-visible:outline-2 focus-visible:outline-gold"
               )}
               key={d.value}
               value={String(d.value)}
@@ -78,17 +78,17 @@ function StatsPanel({ stats }: { stats: DifficultyStats }) {
         />
       </div>
       <div>
-        <h4 className="mb-3 font-medium text-[var(--color-ink-dim)] text-xs uppercase tracking-[0.2em]">
+        <h4 className="mb-3 font-medium text-ink-dim text-xs uppercase tracking-[0.2em]">
           Top 10 best games
         </h4>
         {stats.leaderboard.length === 0 ? (
-          <div className="rounded-xl border border-white/5 bg-black/20 p-5 text-[var(--color-ink-muted)] text-sm">
+          <div className="rounded-xl border border-white/5 bg-black/20 p-5 text-ink-muted text-sm">
             No games won yet. Your best runs will show up here.
           </div>
         ) : (
           <div className="overflow-hidden rounded-xl border border-white/5 bg-black/20">
             <table className="w-full text-sm">
-              <thead className="border-white/5 border-b text-[var(--color-ink-muted)] text-xs uppercase tracking-widest">
+              <thead className="border-white/5 border-b text-ink-muted text-xs uppercase tracking-widest">
                 <tr>
                   <th className="px-4 py-3 text-left font-medium">#</th>
                   <th className="px-4 py-3 text-right font-medium">Moves</th>
@@ -102,16 +102,14 @@ function StatsPanel({ stats }: { stats: DifficultyStats }) {
                     className="border-white/5 border-t tabular-nums first:border-t-0"
                     key={`${entry.finishedAt}-${i}`}
                   >
-                    <td className="px-4 py-3 text-[var(--color-ink-muted)]">
-                      {i + 1}
-                    </td>
-                    <td className="px-4 py-3 text-right text-[var(--color-ink)]">
+                    <td className="px-4 py-3 text-ink-muted">{i + 1}</td>
+                    <td className="px-4 py-3 text-right text-ink">
                       {entry.moves}
                     </td>
-                    <td className="px-4 py-3 text-right text-[var(--color-ink)]">
+                    <td className="px-4 py-3 text-right text-ink">
                       {formatElapsed(entry.elapsedMs)}
                     </td>
-                    <td className="px-4 py-3 text-right text-[var(--color-ink-dim)]">
+                    <td className="px-4 py-3 text-right text-ink-dim">
                       {formatDate(entry.finishedAt)}
                     </td>
                   </tr>
@@ -122,7 +120,7 @@ function StatsPanel({ stats }: { stats: DifficultyStats }) {
         )}
       </div>
       {stats.won > 0 ? (
-        <div className="text-[var(--color-ink-muted)] text-xs">
+        <div className="text-ink-muted text-xs">
           Average winning time: {formatElapsed(averageWinElapsedMs(stats))}
         </div>
       ) : null}
@@ -133,10 +131,10 @@ function StatsPanel({ stats }: { stats: DifficultyStats }) {
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border border-white/5 bg-black/30 p-4">
-      <div className="font-medium text-[var(--color-ink-muted)] text-xs uppercase tracking-widest">
+      <div className="font-medium text-ink-muted text-xs uppercase tracking-widest">
         {label}
       </div>
-      <div className="mt-1 font-semibold text-2xl text-[var(--color-ink)] tabular-nums">
+      <div className="mt-1 font-semibold text-2xl text-ink tabular-nums">
         {value}
       </div>
     </div>

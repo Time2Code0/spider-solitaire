@@ -38,7 +38,7 @@ function ConfirmNewGame() {
       name="confirm-new-game"
       title="Abandon current game?"
     >
-      <p className="text-[var(--color-ink-dim)] text-sm leading-relaxed">
+      <p className="text-ink-dim text-sm leading-relaxed">
         Starting a new game will abandon the one in progress. The abandoned game
         will count as a loss in your statistics.
       </p>

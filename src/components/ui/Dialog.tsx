@@ -60,7 +60,7 @@ export function DialogContent({
         className={cn(
           "fixed top-1/2 left-1/2 z-50 w-full max-w-xl -translate-x-1/2 -translate-y-1/2",
           "flex max-h-[85vh] flex-col overflow-hidden rounded-2xl",
-          "border border-[var(--color-gold)]/30 bg-[var(--color-felt-deep)] text-[var(--color-ink)]",
+          "border border-gold/30 bg-felt-deep text-ink",
           "shadow-2xl shadow-black/60 duration-200",
           "data-[open]:fade-in-0 data-[open]:zoom-in-95 data-[open]:animate-in",
           "data-[closed]:fade-out-0 data-[closed]:zoom-out-95 data-[closed]:animate-out",
@@ -75,9 +75,9 @@ export function DialogContent({
             aria-label="Close"
             className={cn(
               "absolute top-4 right-4 inline-flex size-9 items-center justify-center rounded-full",
-              "text-[var(--color-ink-dim)] transition-colors",
-              "hover:bg-white/10 hover:text-[var(--color-ink)]",
-              "focus-visible:outline-2 focus-visible:outline-[var(--color-gold)] focus-visible:outline-offset-2"
+              "text-ink-dim transition-colors",
+              "hover:bg-white/10 hover:text-ink",
+              "focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2"
             )}
           >
             <X aria-hidden className="size-5" strokeWidth={1.75} />
@@ -139,10 +139,7 @@ export interface DialogTitleProps
 export function DialogTitle({ className, ref, ...props }: DialogTitleProps) {
   return (
     <BaseDialog.Title
-      className={cn(
-        "font-semibold text-[var(--color-ink)] text-xl leading-tight",
-        className
-      )}
+      className={cn("font-semibold text-ink text-xl leading-tight", className)}
       ref={ref}
       {...props}
     />
@@ -162,7 +159,7 @@ export function DialogDescription({
 }: DialogDescriptionProps) {
   return (
     <BaseDialog.Description
-      className={cn("text-[var(--color-ink-dim)] text-sm", className)}
+      className={cn("text-ink-dim text-sm", className)}
       ref={ref}
       {...props}
     />

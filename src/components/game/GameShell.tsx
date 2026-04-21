@@ -213,7 +213,7 @@ function InnerShell() {
   return (
     <DragProvider value={dragContextValue}>
       <main
-        className="felt-backdrop flex min-h-screen flex-col pb-[var(--bottom-bar-h)]"
+        className="felt-backdrop flex min-h-screen flex-col pb-(--bottom-bar-h)"
         ref={dragContainerRef}
       >
         <div className="flex-1 px-8 py-6">
@@ -234,10 +234,7 @@ function InnerShell() {
           ) : null}
         </div>
 
-        <div
-          className="pointer-events-none fixed right-8 left-8 z-30 flex items-end justify-between gap-6 *:pointer-events-auto"
-          style={{ bottom: "calc(var(--bottom-bar-h) + 20px)" }}
-        >
+        <div className="pointer-events-none fixed right-8 bottom-[calc(var(--bottom-bar-h)+20px)] left-8 z-30 flex items-end justify-between gap-6 *:pointer-events-auto">
           {present ? (
             <Foundations
               foundations={present.foundations}

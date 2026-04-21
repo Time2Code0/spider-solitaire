@@ -16,8 +16,8 @@ export function Switch({ className, ref, ...props }: SwitchProps) {
       className={cn(
         "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full",
         "bg-white/15 transition-colors",
-        "focus-visible:outline-2 focus-visible:outline-[var(--color-gold)] focus-visible:outline-offset-2",
-        "data-[checked]:bg-[var(--color-gold)]",
+        "focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2",
+        "data-[checked]:bg-gold",
         "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
         className
       )}

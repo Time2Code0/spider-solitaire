@@ -14,12 +14,9 @@ export interface ButtonProps
 const variantClasses: Record<NonNullable<ButtonProps["variant"]>, string> = {
   primary:
     "bg-gradient-to-b from-[#f1c062] to-[#c78e2b] text-[#241604] hover:from-[#f4cc7e] hover:to-[#d69a35] border border-[#c78e2b] shadow-lg shadow-black/30",
-  secondary:
-    "bg-black/35 text-[var(--color-ink)] hover:bg-black/50 border border-white/10",
-  ghost:
-    "bg-transparent text-[var(--color-ink)] hover:bg-white/10 border border-transparent",
-  danger:
-    "bg-[#7a2424] text-[var(--color-ink)] hover:bg-[#8f2b2b] border border-[#a13535]",
+  secondary: "bg-black/35 text-ink hover:bg-black/50 border border-white/10",
+  ghost: "bg-transparent text-ink hover:bg-white/10 border border-transparent",
+  danger: "bg-[#7a2424] text-ink hover:bg-[#8f2b2b] border border-[#a13535]",
 };
 
 const sizeClasses: Record<NonNullable<ButtonProps["size"]>, string> = {
@@ -41,7 +38,7 @@ export function Button({
     <button
       className={cn(
         "inline-flex items-center justify-center gap-2 rounded-full transition-all",
-        "focus-visible:outline-2 focus-visible:outline-[var(--color-gold)] focus-visible:outline-offset-2",
+        "focus-visible:outline-2 focus-visible:outline-gold focus-visible:outline-offset-2",
         "disabled:cursor-not-allowed disabled:opacity-40",
         fullWidth && "w-full",
         variantClasses[variant],
