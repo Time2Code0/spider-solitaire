@@ -43,8 +43,8 @@ export function BottomBar() {
   };
 
   return (
-    <div className="fixed right-0 bottom-0 left-0 z-40 flex h-(--bottom-bar-h) items-center justify-between gap-6 border-white/10 border-t bg-black/55 px-8 backdrop-blur-xl">
-      <div className="flex items-center gap-3">
+    <div className="fixed right-0 bottom-0 left-0 z-40 flex h-(--bottom-bar-h) items-center gap-6 border-white/10 border-t bg-black/55 px-8 backdrop-blur-xl">
+      <div className="flex flex-1 items-center gap-3">
         <BaseTooltip.Provider closeDelay={80} delay={350}>
           <Tooltip label="Settings">
             <IconButton
@@ -90,7 +90,7 @@ export function BottomBar() {
         New game
       </Button>
 
-      <div className="flex items-center gap-8">
+      <div className="flex flex-1 items-center justify-end gap-8">
         <Stat icon={<Timer aria-hidden className="size-4" />} label="Time">
           <AnimatedElapsed ms={elapsed} />
         </Stat>
