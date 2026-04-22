@@ -24,6 +24,7 @@ import {
   type DragContextValue,
   DragProvider,
 } from "./DragContext";
+import { DEAL_ANIMATION_TOTAL_MS } from "./dealAnimation";
 import { Foundations } from "./Foundations";
 import { Stock } from "./Stock";
 import { useTimer } from "./useTimer";
@@ -92,7 +93,7 @@ function InnerShell() {
 
   useHotkey("Mod+Z", () => undo(), { enabled: canUndo && !anyDialogOpen });
   useHotkey("H", () => cycleHint(), { enabled: !anyDialogOpen });
-  useHotkey("Space", () => deal(), { enabled: canDeal && !anyDialogOpen });
+  useHotkey("Space", () => runDeal(), { enabled: canDeal && !anyDialogOpen });
   useHotkey("Shift+W", () => devForceWin(), {
     enabled: IS_DEV && !!present && !anyDialogOpen,
   });
@@ -111,6 +112,59 @@ function InnerShell() {
   // follower cards in the active drag stack can mirror the leader's Motion
   // transform without triggering React re-renders per pointer frame.
   const dragContainerRef = useRef<HTMLDivElement>(null);
+
+  // IDs of cards currently running the "fly from stock → flip face-up"
+  // animation. Populated from stock[0] immediately before a successful deal,
+  // cleared after the full staggered sequence finishes. Card components that
+  // see their id in this set render the dealing branch (3D flip wrapper).
+  const [dealingIds, setDealingIds] = useState<ReadonlySet<string>>(
+    () => new Set()
+  );
+  const dealingTimeoutRef = useRef<number | null>(null);
+
+  useEffect(
+    () => () => {
+      if (dealingTimeoutRef.current !== null) {
+        window.clearTimeout(dealingTimeoutRef.current);
+      }
+    },
+    []
+  );
+
+  const runDeal = useCallback(() => {
+    // Snapshot the next pile's ids BEFORE dispatching, since `deal()` shifts
+    // stock[0] off. These are exactly the cards that will fly into columns
+    // 0..9 and need isDealing=true in their new position.
+    const present = useGameStore.getState().present;
+    const pending = present?.stock[0]?.map((c) => c.id) ?? [];
+    const ok = deal();
+    if (!ok || pending.length === 0) {
+      return;
+    }
+    setDealingIds((prev) => {
+      const next = new Set(prev);
+      for (const id of pending) {
+        next.add(id);
+      }
+      return next;
+    });
+    if (dealingTimeoutRef.current !== null) {
+      window.clearTimeout(dealingTimeoutRef.current);
+    }
+    dealingTimeoutRef.current = window.setTimeout(() => {
+      setDealingIds((prev) => {
+        if (prev.size === 0) {
+          return prev;
+        }
+        const next = new Set(prev);
+        for (const id of pending) {
+          next.delete(id);
+        }
+        return next;
+      });
+      dealingTimeoutRef.current = null;
+    }, DEAL_ANIMATION_TOTAL_MS + 80);
+  }, [deal]);
 
   useEffect(() => {
     setSelection(null);
@@ -223,6 +277,7 @@ function InnerShell() {
             <Board
               activeDrag={activeDrag}
               back={settings.cardBack}
+              dealingIds={dealingIds}
               front={settings.cardFront}
               hintedCardIds={hintedCardIds}
               hintedEmptyColumns={hintedEmptyColumns}
@@ -252,7 +307,7 @@ function InnerShell() {
               front={settings.cardFront}
               hintPulse={stockHintPulse}
               hintPulseKey={hintPulseKey}
-              onDeal={deal}
+              onDeal={runDeal}
               stock={present.stock}
             />
           ) : null}

@@ -6,6 +6,7 @@ import { Column } from "./Column";
 export interface BoardProps {
   activeDrag: { columnIndex: number; cardIndex: number } | null;
   back: CardBackId;
+  dealingIds: ReadonlySet<string>;
   front: CardFrontId;
   hintedCardIds: Set<string>;
   hintedEmptyColumns: Set<number>;
@@ -28,6 +29,7 @@ export function Board(props: BoardProps) {
     hintedCardIds,
     hintedEmptyColumns,
     hintPulseKey,
+    dealingIds,
     onSelect,
     onTargetClick,
   } = props;
@@ -46,6 +48,7 @@ export function Board(props: BoardProps) {
           back={back}
           cards={columnCards}
           columnIndex={columnIndex}
+          dealingIds={dealingIds}
           emptySlotHinted={hintedEmptyColumns.has(columnIndex)}
           front={front}
           hintedCardIds={hintedCardIds}
