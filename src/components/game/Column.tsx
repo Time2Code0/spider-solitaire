@@ -14,6 +14,7 @@ export interface ColumnProps {
   back: CardBackId;
   cards: CardModel[];
   columnIndex: number;
+  dealingIds: ReadonlySet<string>;
   emptySlotHinted: boolean;
   front: CardFrontId;
   hintedCardIds: Set<string>;
@@ -29,6 +30,7 @@ export function Column(props: ColumnProps) {
     activeDrag,
     cards,
     columnIndex,
+    dealingIds,
     emptySlotHinted,
     front,
     back,
@@ -90,6 +92,7 @@ export function Column(props: ColumnProps) {
             activeDrag.columnIndex === columnIndex &&
             activeDrag.cardIndex < cardIndex;
           const isPartOfActiveDrag = isLeader || isFollower;
+          const isDealing = dealingIds.has(card.id);
           return (
             <div
               className="absolute left-0 w-full"
@@ -118,6 +121,7 @@ export function Column(props: ColumnProps) {
                 front={front}
                 hinted={isHinted}
                 hintPulseKey={hintPulseKey}
+                isDealing={isDealing}
                 isPartOfActiveDrag={isPartOfActiveDrag}
                 onSelect={onSelect}
                 selected={isSelected}

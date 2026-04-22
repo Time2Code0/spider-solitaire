@@ -298,4 +298,42 @@
       animation: none;
     }
   }
+
+  /*
+   * Deal fly-in + flip
+   * ------------------
+   * Used when a freshly dealt card is animating from the stock pile to its
+   * destination column. The outer `.card-surface` handles the fly (driven by
+   * Motion's `layoutId` crossfade); this inner container handles the 3D flip
+   * from face-down to face-up once the card has landed.
+   *
+   *   .card-flip-container — preserve-3d parent that rotateY's 0 → 180
+   *   .card-flip-face      — absolute face with backface-visibility: hidden
+   *   .card-flip-face--back  — visible at 0°   (face-down)
+   *   .card-flip-face--front — pre-rotated 180° so it reveals at parent=180°
+   */
+  .card-flip-container {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    transform-style: preserve-3d;
+  }
+
+  .card-flip-face {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: inherit;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  .card-flip-face--back {
+    background: linear-gradient(160deg, #1b3c6f 0%, #0f2548 100%);
+  }
+
+  .card-flip-face--front {
+    background: var(--color-card-white);
+    transform: rotateY(180deg);
+  }
 }

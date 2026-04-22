@@ -7,6 +7,12 @@ import type { CardBackId, CardFrontId, Card as CardModel } from "@/game/types";
 import { RANK_LABELS, SUIT_NAMES } from "@/game/types";
 import { cn } from "@/lib/utils";
 import { findDropColumn, useDragContext } from "./DragContext";
+import {
+  dealFlipDelayMs,
+  dealFlyDelayMs,
+  FLIP_DURATION_MS,
+  FLY_DURATION_MS,
+} from "./dealAnimation";
 
 export interface CardProps {
   back: CardBackId;
@@ -18,6 +24,7 @@ export interface CardProps {
   highlighted?: boolean;
   hinted?: boolean;
   hintPulseKey?: number;
+  isDealing?: boolean;
   isPartOfActiveDrag?: boolean;
   onSelect?: (columnIndex: number, cardIndex: number) => void;
   selected?: boolean;
@@ -34,6 +41,7 @@ function CardBase(props: CardProps) {
     highlighted,
     hinted,
     hintPulseKey,
+    isDealing = false,
     isPartOfActiveDrag = false,
     draggable = true,
     onSelect,
@@ -47,9 +55,12 @@ function CardBase(props: CardProps) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  const dragEnabled = draggable && card.faceUp;
+  const dragEnabled = draggable && card.faceUp && !isDealing;
 
   const handleClick = () => {
+    if (isDealing) {
+      return;
+    }
     onSelect?.(columnIndex, cardIndex);
   };
 
@@ -66,6 +77,47 @@ function CardBase(props: CardProps) {
       container.style.setProperty("--drag-y", "0px");
     }
   };
+
+  // Dealing branch: fly from the stock (driven by layoutId crossfade from the
+  // matching ghost element in <Stock />) then play a 3D flip to reveal the
+  // front face. Interactions are disabled until the animation clears and the
+  // card re-renders through the normal path below.
+  if (isDealing) {
+    return (
+      <motion.div
+        aria-label={label}
+        className="card-surface pointer-events-none absolute top-0 left-0"
+        data-card-id={card.id}
+        initial={false}
+        layoutId={card.id}
+        style={{ zIndex: 60 + columnIndex }}
+        transition={{
+          type: "tween",
+          duration: FLY_DURATION_MS / 1000,
+          delay: dealFlyDelayMs(columnIndex) / 1000,
+          ease: [0.22, 0.61, 0.36, 1],
+        }}
+      >
+        <motion.div
+          animate={{ rotateY: 180 }}
+          className="card-flip-container"
+          initial={{ rotateY: 0 }}
+          transition={{
+            duration: FLIP_DURATION_MS / 1000,
+            delay: dealFlipDelayMs(columnIndex) / 1000,
+            ease: "easeInOut",
+          }}
+        >
+          <div className="card-flip-face card-flip-face--back">
+            <CardBack back={back} front={front} />
+          </div>
+          <div className="card-flip-face card-flip-face--front">
+            <CardFace back={back} card={card} front={front} />
+          </div>
+        </motion.div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
