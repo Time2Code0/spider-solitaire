@@ -13,12 +13,10 @@ export function ConfirmDialog() {
 
 function ConfirmNewGame() {
   const closeDialog = useGameStore((s) => s.closeDialog);
-  const registerAbandonAsLoss = useGameStore((s) => s.registerAbandonAsLoss);
   const startNewGame = useGameStore((s) => s.startNewGame);
 
   const onCancel = () => closeDialog("confirm-new-game");
   const onConfirm = () => {
-    registerAbandonAsLoss();
     startNewGame();
     closeDialog("confirm-new-game");
   };

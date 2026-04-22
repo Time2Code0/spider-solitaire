@@ -3,6 +3,7 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 import { describeFront } from "@/game/decks";
+import { isWon } from "@/game/engine";
 import { selectCurrentGame, useGameStore } from "@/game/store";
 import type { Card, CardFrontId } from "@/game/types";
 
@@ -15,7 +16,12 @@ export function WinFlourish() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [seed, setSeed] = useState(0);
 
+  const hasWon = game ? isWon(game) : false;
+
   useEffect(() => {
+    if (!hasWon) {
+      return;
+    }
     if (!game?.completedAt) {
       return;
     }
@@ -26,7 +32,7 @@ export function WinFlourish() {
     setSeed((s) => s + 1);
     const t = window.setTimeout(() => setIsPlaying(false), 4200);
     return () => window.clearTimeout(t);
-  }, [game?.completedAt, prefersReduced]);
+  }, [game?.completedAt, hasWon, prefersReduced]);
 
   if (!(isPlaying && game)) {
     return null;

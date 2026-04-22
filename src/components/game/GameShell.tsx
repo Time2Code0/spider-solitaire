@@ -3,9 +3,10 @@
 import { HotkeysProvider, useHotkey } from "@tanstack/react-hotkeys";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
-import { EndOfGameDialog } from "@/components/dialogs/EndOfGameDialog";
+import { LoseDialog } from "@/components/dialogs/LoseDialog";
 import { SettingsDialog } from "@/components/dialogs/SettingsDialog";
 import { StatsDialog } from "@/components/dialogs/StatsDialog";
+import { WinDialog } from "@/components/dialogs/WinDialog";
 import { isMovableGroup } from "@/game/engine";
 import { enumerateLegalMoves } from "@/game/hints";
 import {
@@ -318,7 +319,8 @@ function InnerShell() {
         <WinFlourish />
         <SettingsDialog />
         <StatsDialog />
-        <EndOfGameDialog />
+        <WinDialog />
+        <LoseDialog />
         <ConfirmDialog />
       </main>
     </DragProvider>
