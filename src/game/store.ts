@@ -36,7 +36,8 @@ const HISTORY_TRIM = 400;
 export type DialogName =
   | "settings"
   | "stats"
-  | "end-of-game"
+  | "game-won"
+  | "game-lost"
   | "confirm-new-game";
 
 export interface GameStore {
@@ -59,7 +60,6 @@ export interface GameStore {
   openDialogs: DialogName[];
   past: GameState[];
   present: GameState | null;
-  registerAbandonAsLoss: () => void;
   resetStats: () => void;
   setElapsedMs: (ms: number) => void;
   setInvalidFlash: (column: number | null) => void;
@@ -87,23 +87,42 @@ function pushHistory(past: GameState[], state: GameState): GameState[] {
   return next;
 }
 
-function finalizeIfWon(
+export type GameOutcome = "won" | "lost" | null;
+
+export function getOutcome(state: GameState | null): GameOutcome {
+  if (!state || state.completedAt === null) {
+    return null;
+  }
+  return isWon(state) ? "won" : "lost";
+}
+
+function finalizeIfOver(
   state: GameState,
   stats: StatsByDifficulty
-): { state: GameState; stats: StatsByDifficulty; won: boolean } {
-  if (!isWon(state)) {
-    return { state, stats, won: false };
+): { state: GameState; stats: StatsByDifficulty; outcome: GameOutcome } {
+  if (isWon(state)) {
+    const entry: LeaderboardEntry = {
+      moves: state.moves,
+      elapsedMs: state.elapsedMs,
+      finishedAt: state.completedAt ?? Date.now(),
+    };
+    return {
+      state,
+      stats: recordWin(stats, state.difficulty, entry),
+      outcome: "won",
+    };
   }
-  const entry: LeaderboardEntry = {
-    moves: state.moves,
-    elapsedMs: state.elapsedMs,
-    finishedAt: state.completedAt ?? Date.now(),
-  };
-  return {
-    state,
-    stats: recordWin(stats, state.difficulty, entry),
-    won: true,
-  };
+  // Losses are NOT recorded here so undo can cleanly revert the dead-end move
+  // without unwinding stats. The loss is recorded by `startNewGame` when the
+  // user commits to starting over (via Play again / New Game).
+  if (!hasAnyLegalMove(state)) {
+    const lost: GameState = {
+      ...state,
+      completedAt: state.completedAt ?? Date.now(),
+    };
+    return { state: lost, stats, outcome: "lost" };
+  }
+  return { state, stats, outcome: null };
 }
 
 function applySoundsSetting(mode: SoundsMode): void {
@@ -148,23 +167,33 @@ function buildWinningState(state: GameState): GameState {
   };
 }
 
-const END_OF_GAME_DIALOG_DELAY_MS = 2800;
+const END_OF_GAME_DIALOG_WIN_DELAY_MS = 2800;
+const END_OF_GAME_DIALOG_LOSS_DELAY_MS = 800;
 
-function scheduleEndOfGameDialog(getState: () => GameStore): void {
+function scheduleEndOfGameDialog(
+  getState: () => GameStore,
+  outcome: Exclude<GameOutcome, null>
+): void {
+  const dialog: DialogName = outcome === "won" ? "game-won" : "game-lost";
   if (typeof window === "undefined") {
-    getState().openDialog("end-of-game");
+    getState().openDialog(dialog);
     return;
   }
+  const delay =
+    outcome === "won"
+      ? END_OF_GAME_DIALOG_WIN_DELAY_MS
+      : END_OF_GAME_DIALOG_LOSS_DELAY_MS;
   window.setTimeout(() => {
     const current = getState();
     if (!current.present) {
       return;
     }
-    if (current.present.completedAt === null) {
+    if (getOutcome(current.present) !== outcome) {
+      // User undid the final move before the dialog fired — skip.
       return;
     }
-    current.openDialog("end-of-game");
-  }, END_OF_GAME_DIALOG_DELAY_MS);
+    current.openDialog(dialog);
+  }, delay);
 }
 
 export const useGameStore = create<GameStore>()(
@@ -186,6 +215,8 @@ export const useGameStore = create<GameStore>()(
         const { present, stats, settings } = get();
         const diff = difficulty ?? settings.defaultDifficulty;
         let nextStats = stats;
+        // Records a loss when abandoning an in-progress game AND when starting
+        // over from a lost end-state (since `finalizeIfOver` doesn't record).
         if (present && !isWon(present) && present.moves > 0) {
           nextStats = recordLoss(stats, present.difficulty);
         }
@@ -205,7 +236,7 @@ export const useGameStore = create<GameStore>()(
 
       devForceWin() {
         const { present, past, stats } = get();
-        if (!present || isWon(present)) {
+        if (!present || present.completedAt !== null) {
           return;
         }
         const winning = buildWinningState(present);
@@ -227,34 +258,34 @@ export const useGameStore = create<GameStore>()(
           hintPulseKey: 0,
           invalidFlashColumn: null,
         });
-        scheduleEndOfGameDialog(get);
+        scheduleEndOfGameDialog(get, "won");
       },
 
       devForceLose() {
-        const { present, stats, settings } = get();
-        if (!present) {
+        const { present, past } = get();
+        if (!present || present.completedAt !== null) {
           return;
         }
-        const nextStats = isWon(present)
-          ? stats
-          : recordLoss(stats, present.difficulty);
-        const fresh = createInitialState(settings.defaultDifficulty);
+        const lost: GameState = {
+          ...cloneState(present),
+          completedAt: Date.now(),
+        };
         playSound("invalid");
         set({
-          present: fresh,
-          past: [],
-          stats: nextStats,
+          present: lost,
+          past: pushHistory(past, present),
           lastMoveAt: Date.now(),
           hintIndex: 0,
           hintVisible: false,
           hintPulseKey: 0,
           invalidFlashColumn: null,
         });
+        scheduleEndOfGameDialog(get, "lost");
       },
 
       attemptMove(from, cardIndex, to) {
         const { present, past, stats } = get();
-        if (!present || isWon(present)) {
+        if (!present || present.completedAt !== null) {
           return false;
         }
         const result = attemptTableauMove(present, from, cardIndex, to);
@@ -266,12 +297,12 @@ export const useGameStore = create<GameStore>()(
         const {
           state: finalized,
           stats: nextStats,
-          won,
-        } = finalizeIfWon(result, stats);
+          outcome,
+        } = finalizeIfOver(result, stats);
         const foundationFired =
           finalized.foundations.length > present.foundations.length;
         playSound(foundationFired ? "foundation" : "drop");
-        if (won) {
+        if (outcome === "won") {
           playSound("win");
         }
         set({
@@ -284,15 +315,15 @@ export const useGameStore = create<GameStore>()(
           hintPulseKey: 0,
           invalidFlashColumn: null,
         });
-        if (won) {
-          scheduleEndOfGameDialog(get);
+        if (outcome) {
+          scheduleEndOfGameDialog(get, outcome);
         }
         return true;
       },
 
       deal() {
         const { present, past, stats } = get();
-        if (!present || isWon(present)) {
+        if (!present || present.completedAt !== null) {
           return false;
         }
         if (!canDeal(present)) {
@@ -306,10 +337,10 @@ export const useGameStore = create<GameStore>()(
         const {
           state: finalized,
           stats: nextStats,
-          won,
-        } = finalizeIfWon(result, stats);
+          outcome,
+        } = finalizeIfOver(result, stats);
         playSound("deal");
-        if (won) {
+        if (outcome === "won") {
           playSound("win");
         }
         set({
@@ -322,8 +353,8 @@ export const useGameStore = create<GameStore>()(
           hintPulseKey: 0,
           invalidFlashColumn: null,
         });
-        if (won) {
-          scheduleEndOfGameDialog(get);
+        if (outcome) {
+          scheduleEndOfGameDialog(get, outcome);
         }
         return true;
       },
@@ -353,7 +384,7 @@ export const useGameStore = create<GameStore>()(
 
       cycleHint() {
         const { present, hintIndex, hintVisible } = get();
-        if (!present || isWon(present)) {
+        if (!present || present.completedAt !== null) {
           return;
         }
         const moves: Move[] = enumerateLegalMoves(present);
@@ -391,14 +422,6 @@ export const useGameStore = create<GameStore>()(
 
       isDialogOpen(name) {
         return get().openDialogs.includes(name);
-      },
-
-      registerAbandonAsLoss() {
-        const { present, stats } = get();
-        if (!present || isWon(present) || present.moves === 0) {
-          return;
-        }
-        set({ stats: recordLoss(stats, present.difficulty) });
       },
 
       updateSettings(patch) {
@@ -479,14 +502,18 @@ export function selectCurrentGame(state: GameStore): GameState | null {
 }
 
 export function selectCanUndo(state: GameStore): boolean {
+  // Allow undo while a game is in-progress OR has ended in a loss, so the
+  // player can back out of a dead-end move. Blocked once the game is won.
   return (
-    state.past.length > 0 && state.present !== null && !isWon(state.present)
+    state.past.length > 0 &&
+    state.present !== null &&
+    !isWon(state.present)
   );
 }
 
 export function selectCanDeal(state: GameStore): boolean {
   const present = state.present;
-  if (!present || isWon(present)) {
+  if (!present || present.completedAt !== null) {
     return false;
   }
   return canDeal(present);

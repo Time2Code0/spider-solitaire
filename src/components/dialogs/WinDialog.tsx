@@ -1,27 +1,31 @@
 "use client";
 
 import { Award, RefreshCcw, Trophy } from "lucide-react";
-import { formatElapsed } from "@/components/game/useTimer";
 import { Button } from "@/components/ui/Button";
+import { isWon } from "@/game/engine";
 import { isNewBest } from "@/game/stats";
 import { selectCurrentGame, useGameStore } from "@/game/store";
 import { GameDialog } from "./GameDialog";
+import { GameSummary } from "./GameSummary";
 
-export function EndOfGameDialog() {
-  const open = useGameStore((s) => s.openDialogs.includes("end-of-game"));
+export function WinDialog() {
+  const open = useGameStore((s) => s.openDialogs.includes("game-won"));
   if (!open) {
     return null;
   }
-  return <EndOfGameDialogInner />;
+  return <WinDialogInner />;
 }
 
-function EndOfGameDialogInner() {
+function WinDialogInner() {
   const game = useGameStore(selectCurrentGame);
   const stats = useGameStore((s) => s.stats);
   const startNewGame = useGameStore((s) => s.startNewGame);
   const closeDialog = useGameStore((s) => s.closeDialog);
 
   if (!game) {
+    return null;
+  }
+  if (!isWon(game)) {
     return null;
   }
 
@@ -37,9 +41,9 @@ function EndOfGameDialogInner() {
       recordedEntry.elapsedMs === currentEntry.elapsedMs
     : isNewBest(difficultyStats, currentEntry);
 
-  const onDone = () => closeDialog("end-of-game");
+  const onClose = () => closeDialog("game-won");
   const onPlayAgain = () => {
-    closeDialog("end-of-game");
+    closeDialog("game-won");
     startNewGame();
   };
 
@@ -47,7 +51,7 @@ function EndOfGameDialogInner() {
     <GameDialog
       footer={
         <>
-          <Button onClick={onDone} size="lg" variant="ghost">
+          <Button onClick={onClose} size="lg" variant="ghost">
             Close
           </Button>
           <Button
@@ -61,7 +65,7 @@ function EndOfGameDialogInner() {
           </Button>
         </>
       }
-      name="end-of-game"
+      name="game-won"
       title="You won!"
     >
       <div className="flex flex-col items-center gap-6 py-2 text-center">
@@ -71,14 +75,7 @@ function EndOfGameDialogInner() {
         <p className="max-w-md text-ink-dim">
           You assembled all eight suits. Here is how this game measured up.
         </p>
-        <div className="grid w-full max-w-lg grid-cols-3 gap-3">
-          <Metric
-            label="Difficulty"
-            value={`${game.difficulty} suit${game.difficulty === 1 ? "" : "s"}`}
-          />
-          <Metric label="Moves" value={String(game.moves)} />
-          <Metric label="Time" value={formatElapsed(game.elapsedMs)} />
-        </div>
+        <GameSummary game={game} />
         {isBest ? (
           <div className="flex items-center gap-2 rounded-full border border-gold/40 bg-gold/15 px-4 py-1.5 font-medium text-gold text-sm">
             <Award aria-hidden className="size-4" />
@@ -87,18 +84,5 @@ function EndOfGameDialogInner() {
         ) : null}
       </div>
     </GameDialog>
-  );
-}
-
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-xl border border-white/5 bg-black/30 p-4">
-      <div className="font-medium text-ink-muted text-xs uppercase tracking-widest">
-        {label}
-      </div>
-      <div className="mt-1 font-semibold text-2xl text-ink tabular-nums">
-        {value}
-      </div>
-    </div>
   );
 }
