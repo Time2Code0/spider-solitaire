@@ -167,24 +167,6 @@
     z-index: 1;
   }
 
-  .desktop-only {
-    display: contents;
-  }
-
-  .small-screen-notice {
-    display: none;
-  }
-
-  @media (max-width: 1023px), (max-height: 699px) {
-    .desktop-only {
-      display: none !important;
-    }
-
-    .small-screen-notice {
-      display: flex !important;
-    }
-  }
-
   .card-surface {
     width: var(--card-w);
     height: var(--card-h);
