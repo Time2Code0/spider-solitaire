@@ -3,9 +3,9 @@
 import { Tooltip as BaseTooltip } from "@base-ui-components/react/tooltip";
 import { Skull, Trophy } from "lucide-react";
 import type { Ref } from "react";
-import { Tooltip } from "@/components/ui/Tooltip";
-import { devForceLose, devForceWin } from "@/game/devActions";
-import { selectCurrentGame, useGameStore } from "@/game/store";
+import { Tooltip } from "@/components/ui/tooltip";
+import { devForceLose, devForceWin } from "@/game/dev-actions";
+import { selectCurrentGame, useGameStore } from "@/game/game-store";
 import { cn } from "@/lib/utils";
 
 export function DevTools() {

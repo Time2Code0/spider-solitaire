@@ -2,33 +2,33 @@
 
 import { HotkeysProvider, useHotkey } from "@tanstack/react-hotkeys";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { LoseDialog } from "@/components/dialogs/LoseDialog";
-import { WinDialog } from "@/components/dialogs/WinDialog";
-import { devForceLose, devForceWin } from "@/game/devActions";
+import { LoseDialog } from "@/components/dialogs/lose-dialog";
+import { WinDialog } from "@/components/dialogs/win-dialog";
+import { devForceLose, devForceWin } from "@/game/dev-actions";
 import { isMovableGroup } from "@/game/engine";
 import { enumerateLegalMoves } from "@/game/hints";
-import { HINT_IDLE_MS, useHintsStore } from "@/game/hintsStore";
-import { selectIsPaused, usePauseStore } from "@/game/pauseStore";
-import { useSettingsStore } from "@/game/settingsStore";
+import { HINT_IDLE_MS, useHintsStore } from "@/game/hints-store";
+import { selectIsPaused, usePauseStore } from "@/game/pause-store";
+import { useSettingsStore } from "@/game/settings-store";
 import {
   selectCanDeal,
   selectCanUndo,
   selectCurrentGame,
   useGameStore,
-} from "@/game/store";
+} from "@/game/game-store";
 import type { GameState, Move } from "@/game/types";
-import { Board } from "./Board";
-import { BottomBar } from "./BottomBar";
+import { Board } from "./board";
+import { BottomBar } from "./bottom-bar";
+import { DEAL_ANIMATION_TOTAL_MS } from "./deal-animation";
 import {
   type ActiveDrag,
   type DragContextValue,
   DragProvider,
-} from "./DragContext";
-import { DEAL_ANIMATION_TOTAL_MS } from "./dealAnimation";
-import { Foundations } from "./Foundations";
-import { Stock } from "./Stock";
-import { useTimer } from "./useTimer";
-import { WinFlourish } from "./WinFlourish";
+} from "./drag-context";
+import { Foundations } from "./foundations";
+import { Stock } from "./stock";
+import { useTimer } from "./use-timer";
+import { WinFlourish } from "./win-flourish";
 
 const IS_DEV = process.env.NODE_ENV === "development";
 

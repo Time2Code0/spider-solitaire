@@ -1,8 +1,8 @@
 "use client";
 
-import { HoldToConfirmButton } from "@/components/ui/HoldToConfirmButton";
-import { RadioGroup, RadioGroupCard } from "@/components/ui/RadioGroup";
-import { Switch } from "@/components/ui/Switch";
+import { HoldToConfirmButton } from "@/components/ui/hold-to-confirm-button";
+import { RadioGroup, RadioGroupCard } from "@/components/ui/radio-group";
+import { Switch } from "@/components/ui/switch";
 import {
   BACKGROUND_COLOR_IDS,
   BACKGROUND_COLORS,
@@ -15,8 +15,8 @@ import {
   describeBack,
   describeFront,
 } from "@/game/decks";
-import { useSettingsStore } from "@/game/settingsStore";
-import { useStatsStore } from "@/game/statsStore";
+import { useSettingsStore } from "@/game/settings-store";
+import { useStatsStore } from "@/game/stats-store";
 import type {
   BackgroundColor,
   BackgroundStyle,
@@ -25,7 +25,7 @@ import type {
   Difficulty,
   SoundsMode,
 } from "@/game/types";
-import { GameDialog } from "./GameDialog";
+import { GameDialog } from "./game-dialog";
 
 const DIFFICULTIES: { value: Difficulty; label: string; hint: string }[] = [
   { value: 1, label: "1 suit", hint: "Easiest" },

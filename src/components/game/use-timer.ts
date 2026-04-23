@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { usePauseStore } from "@/game/pauseStore";
-import { useGameStore } from "@/game/store";
+import { usePauseStore } from "@/game/pause-store";
+import { useGameStore } from "@/game/game-store";
 
 const TICK_INTERVAL_MS = 250;
 

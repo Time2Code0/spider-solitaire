@@ -1,5 +1,5 @@
-import { GameShell } from "@/components/game/GameShell";
-import { SmallScreenGate } from "@/components/game/SmallScreenGate";
+import { GameShell } from "@/components/game/game-shell";
+import { SmallScreenGate } from "@/components/game/small-screen-gate";
 
 export default function Page() {
   return (

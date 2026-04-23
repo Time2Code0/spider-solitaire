@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { enumerateLegalMoves } from "./hints";
-import { useGameStore } from "./store";
+import { useGameStore } from "./game-store";
 import type { Move } from "./types";
 
 export const HINT_IDLE_MS = 30_000;

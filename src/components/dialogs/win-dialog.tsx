@@ -2,13 +2,13 @@
 
 import { Award, RefreshCcw, Trophy } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { isWon } from "@/game/engine";
 import { isNewBest } from "@/game/stats";
-import { useStatsStore } from "@/game/statsStore";
-import { selectCurrentGame, useGameStore } from "@/game/store";
-import { GameDialog } from "./GameDialog";
-import { GameSummary } from "./GameSummary";
+import { useStatsStore } from "@/game/stats-store";
+import { selectCurrentGame, useGameStore } from "@/game/game-store";
+import { GameDialog } from "./game-dialog";
+import { GameSummary } from "./game-summary";
 
 const WIN_DIALOG_DELAY_MS = 2800;
 
