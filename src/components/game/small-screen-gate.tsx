@@ -1,6 +1,6 @@
 export function SmallScreenGate() {
   return (
-    <div className="small-screen-notice fixed inset-0 z-50 flex-col items-center justify-center gap-4 bg-felt-deep p-8 text-center">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-felt-deep p-8 text-center">
       <div aria-hidden className="felt-backdrop absolute inset-0 -z-10" />
       <svg
         aria-hidden
