@@ -8,8 +8,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/Dialog";
-import { usePausesTimerWhileOpen } from "@/game/pauseStore";
+} from "@/components/ui/dialog";
+import { usePausesTimerWhileOpen } from "@/game/pause-store";
 import { cn } from "@/lib/utils";
 
 export interface GameDialogProps {

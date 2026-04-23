@@ -4,7 +4,7 @@ import { AnimatePresence } from "motion/react";
 import { deepestMovableIndex } from "@/game/engine";
 import type { CardBackId, CardFrontId, Card as CardModel } from "@/game/types";
 import { cn } from "@/lib/utils";
-import { Card } from "./Card";
+import { Card } from "./card";
 
 const FANOUT_UP = 0.27;
 const FANOUT_DOWN = 0.12;

@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/Button";
-import { GameDialog } from "./GameDialog";
+import { Button } from "@/components/ui/button";
+import { GameDialog } from "./game-dialog";
 
 export interface ConfirmDialogProps {
   onConfirm: () => void;

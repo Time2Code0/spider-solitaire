@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import { describeBack } from "@/game/decks";
 import type { Card, CardBackId, CardFrontId } from "@/game/types";
 import { cn } from "@/lib/utils";
-import { dealFlyDelayMs, FLY_DURATION_MS } from "./dealAnimation";
+import { dealFlyDelayMs, FLY_DURATION_MS } from "./deal-animation";
 
 export interface StockProps {
   back: CardBackId;

@@ -1,7 +1,7 @@
 "use client";
 
 import type { Card, CardBackId, CardFrontId } from "@/game/types";
-import { Column } from "./Column";
+import { Column } from "./column";
 
 export interface BoardProps {
   activeDrag: { columnIndex: number; cardIndex: number } | null;

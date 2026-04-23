@@ -1,6 +1,6 @@
 "use client";
 
-import { formatElapsed } from "@/components/game/useTimer";
+import { formatElapsed } from "@/components/game/use-timer";
 import type { GameState } from "@/game/types";
 
 export interface GameSummaryProps {

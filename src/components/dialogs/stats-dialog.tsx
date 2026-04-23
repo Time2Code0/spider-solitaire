@@ -1,12 +1,12 @@
 "use client";
 
 import { Tabs } from "@base-ui-components/react/tabs";
-import { formatElapsed } from "@/components/game/useTimer";
+import { formatElapsed } from "@/components/game/use-timer";
 import { averageWinElapsedMs, averageWinMoves, winRate } from "@/game/stats";
-import { useStatsStore } from "@/game/statsStore";
+import { useStatsStore } from "@/game/stats-store";
 import type { Difficulty, DifficultyStats } from "@/game/types";
 import { cn } from "@/lib/utils";
-import { GameDialog } from "./GameDialog";
+import { GameDialog } from "./game-dialog";
 
 const DIFFICULTIES: { value: Difficulty; label: string }[] = [
   { value: 1, label: "1 suit" },

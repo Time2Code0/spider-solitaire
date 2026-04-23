@@ -11,9 +11,9 @@ import {
   isWon,
 } from "./engine";
 import { enumerateLegalMoves } from "./hints";
-import { useSettingsStore } from "./settingsStore";
+import { useSettingsStore } from "./settings-store";
 import { playSound } from "./sounds";
-import { useStatsStore } from "./statsStore";
+import { useStatsStore } from "./stats-store";
 import type { Difficulty, GameState, LeaderboardEntry, Move } from "./types";
 
 const MAX_HISTORY = 500;

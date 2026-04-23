@@ -2,11 +2,11 @@
 
 import { Frown, RefreshCcw } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { isWon } from "@/game/engine";
-import { selectCurrentGame, useGameStore } from "@/game/store";
-import { GameDialog } from "./GameDialog";
-import { GameSummary } from "./GameSummary";
+import { selectCurrentGame, useGameStore } from "@/game/game-store";
+import { GameDialog } from "./game-dialog";
+import { GameSummary } from "./game-summary";
 
 const LOSE_DIALOG_DELAY_MS = 800;
 

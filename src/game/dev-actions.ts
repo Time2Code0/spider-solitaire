@@ -1,7 +1,7 @@
 import { cloneState, FULL_SUIT_LENGTH, TABLEAU_COLUMNS } from "./engine";
 import { playSound } from "./sounds";
-import { useStatsStore } from "./statsStore";
-import { pushHistory, useGameStore } from "./store";
+import { useStatsStore } from "./stats-store";
+import { pushHistory, useGameStore } from "./game-store";
 import type { Card, GameState, LeaderboardEntry, Suit } from "./types";
 import { SUITS } from "./types";
 

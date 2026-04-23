@@ -6,13 +6,13 @@ import { describeBack, describeFront } from "@/game/decks";
 import type { CardBackId, CardFrontId, Card as CardModel } from "@/game/types";
 import { RANK_LABELS, SUIT_NAMES } from "@/game/types";
 import { cn } from "@/lib/utils";
-import { findDropColumn, useDragContext } from "./DragContext";
 import {
   dealFlipDelayMs,
   dealFlyDelayMs,
   FLIP_DURATION_MS,
   FLY_DURATION_MS,
-} from "./dealAnimation";
+} from "./deal-animation";
+import { findDropColumn, useDragContext } from "./drag-context";
 
 export interface CardProps {
   back: CardBackId;

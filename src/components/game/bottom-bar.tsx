@@ -11,17 +11,17 @@ import {
   Timer,
 } from "lucide-react";
 import { useState } from "react";
-import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
-import { SettingsDialog } from "@/components/dialogs/SettingsDialog";
-import { StatsDialog } from "@/components/dialogs/StatsDialog";
-import { Button } from "@/components/ui/Button";
-import { IconButton } from "@/components/ui/IconButton";
-import { Tooltip } from "@/components/ui/Tooltip";
+import { ConfirmDialog } from "@/components/dialogs/confirm-dialog";
+import { SettingsDialog } from "@/components/dialogs/settings-dialog";
+import { StatsDialog } from "@/components/dialogs/stats-dialog";
+import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/icon-button";
+import { Tooltip } from "@/components/ui/tooltip";
 import { isWon } from "@/game/engine";
-import { useHintsStore } from "@/game/hintsStore";
-import { useSettingsStore } from "@/game/settingsStore";
-import { selectCanUndo, selectCurrentGame, useGameStore } from "@/game/store";
-import { DevTools } from "./DevTools";
+import { useHintsStore } from "@/game/hints-store";
+import { useSettingsStore } from "@/game/settings-store";
+import { selectCanUndo, selectCurrentGame, useGameStore } from "@/game/game-store";
+import { DevTools } from "./dev-tools";
 
 export function BottomBar() {
   const present = useGameStore(selectCurrentGame);
