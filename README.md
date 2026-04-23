@@ -1,5 +1,5 @@
 > [!WARNING]
-> I fully vibe coded this app using using `Opus 4.7 Max Thinking`.
+> I fully vibe coded this app using `Opus 4.7 Max Thinking`.
 > I have not fully reviewed all of the generated code yet, but I plan to do a proper pass once I have some free time. In the meantime and in honor of Todd Howard let's just say: It just works™.
 >
 > I do not plan to actively maintain this project, but contributions are welcome. If a change is actually meaningful, I will merge it.
