@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePauseStore } from "@/game/pauseStore";
 import { useGameStore } from "@/game/store";
 
 const TICK_INTERVAL_MS = 250;
@@ -51,9 +52,9 @@ export function useTimer() {
         lastTickAtRef.current = null;
         return;
       }
-      const dialogOpen = state.openDialogs.length > 0;
+      const paused = usePauseStore.getState().pauseCount > 0;
       const shouldRun =
-        !dialogOpen && hasUserInteractedRef.current && !tabHiddenRef.current;
+        !paused && hasUserInteractedRef.current && !tabHiddenRef.current;
       if (!shouldRun) {
         lastTickAtRef.current = null;
         return;

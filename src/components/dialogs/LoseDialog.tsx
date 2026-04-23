@@ -1,24 +1,32 @@
 "use client";
 
 import { Frown, RefreshCcw } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { isWon } from "@/game/engine";
 import { selectCurrentGame, useGameStore } from "@/game/store";
 import { GameDialog } from "./GameDialog";
 import { GameSummary } from "./GameSummary";
 
-export function LoseDialog() {
-  const open = useGameStore((s) => s.openDialogs.includes("game-lost"));
-  if (!open) {
-    return null;
-  }
-  return <LoseDialogInner />;
-}
+const LOSE_DIALOG_DELAY_MS = 800;
 
-function LoseDialogInner() {
+export function LoseDialog() {
   const game = useGameStore(selectCurrentGame);
   const startNewGame = useGameStore((s) => s.startNewGame);
-  const closeDialog = useGameStore((s) => s.closeDialog);
+
+  const [open, setOpen] = useState(false);
+
+  const completedAt = game?.completedAt ?? null;
+  const lost = !!(game && completedAt !== null && !isWon(game));
+
+  useEffect(() => {
+    if (!lost) {
+      setOpen(false);
+      return;
+    }
+    const t = window.setTimeout(() => setOpen(true), LOSE_DIALOG_DELAY_MS);
+    return () => window.clearTimeout(t);
+  }, [lost]);
 
   // Guarded explicitly against stale state (e.g. the user just won via a
   // recent undo-redo); a lost game has a `completedAt` but isn't won.
@@ -26,9 +34,9 @@ function LoseDialogInner() {
     return null;
   }
 
-  const onClose = () => closeDialog("game-lost");
+  const onClose = () => setOpen(false);
   const onPlayAgain = () => {
-    closeDialog("game-lost");
+    setOpen(false);
     startNewGame();
   };
 
@@ -50,7 +58,8 @@ function LoseDialogInner() {
           </Button>
         </>
       }
-      name="game-lost"
+      onOpenChange={setOpen}
+      open={open}
       title="No more moves"
     >
       <div className="flex flex-col items-center gap-6 py-2 text-center">

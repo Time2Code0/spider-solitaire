@@ -2,16 +2,15 @@
 
 import { HotkeysProvider, useHotkey } from "@tanstack/react-hotkeys";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
 import { LoseDialog } from "@/components/dialogs/LoseDialog";
-import { SettingsDialog } from "@/components/dialogs/SettingsDialog";
-import { StatsDialog } from "@/components/dialogs/StatsDialog";
 import { WinDialog } from "@/components/dialogs/WinDialog";
+import { devForceLose, devForceWin } from "@/game/devActions";
 import { isMovableGroup } from "@/game/engine";
 import { enumerateLegalMoves } from "@/game/hints";
+import { HINT_IDLE_MS, useHintsStore } from "@/game/hintsStore";
+import { selectIsPaused, usePauseStore } from "@/game/pauseStore";
+import { useSettingsStore } from "@/game/settingsStore";
 import {
-  HINT_IDLE_MS,
-  selectAnyDialogOpen,
   selectCanDeal,
   selectCanUndo,
   selectCurrentGame,
@@ -43,27 +42,40 @@ export function GameShell() {
 
 function InnerShell() {
   const present = useGameStore(selectCurrentGame);
-  const settings = useGameStore((s) => s.settings);
-  const hasHydrated = useGameStore((s) => s.hasHydrated);
+  const settings = useSettingsStore((s) => s.settings);
+  const settingsHydrated = useSettingsStore((s) => s.hasHydrated);
+  const gameHydrated = useGameStore((s) => s.hasHydrated);
+  const hasHydrated = gameHydrated && settingsHydrated;
   const startNewGame = useGameStore((s) => s.startNewGame);
-  const attemptMove = useGameStore((s) => s.attemptMove);
+  const attemptMoveAction = useGameStore((s) => s.attemptMove);
   const deal = useGameStore((s) => s.deal);
   const undo = useGameStore((s) => s.undo);
-  const cycleHint = useGameStore((s) => s.cycleHint);
-  const clearHint = useGameStore((s) => s.clearHint);
-  const setInvalidFlash = useGameStore((s) => s.setInvalidFlash);
-  const invalidFlashColumn = useGameStore((s) => s.invalidFlashColumn);
-  const hintVisible = useGameStore((s) => s.hintVisible);
-  const hintIndex = useGameStore((s) => s.hintIndex);
-  const hintPulseKey = useGameStore((s) => s.hintPulseKey);
+  const cycleHint = useHintsStore((s) => s.cycleHint);
+  const clearHint = useHintsStore((s) => s.clearHint);
+  const hintVisible = useHintsStore((s) => s.hintVisible);
+  const hintIndex = useHintsStore((s) => s.hintIndex);
+  const hintPulseKey = useHintsStore((s) => s.hintPulseKey);
   const canUndo = useGameStore(selectCanUndo);
   const canDeal = useGameStore(selectCanDeal);
-  const anyDialogOpen = useGameStore(selectAnyDialogOpen);
-  const lastMoveAt = useGameStore((s) => s.lastMoveAt);
-  const devForceWin = useGameStore((s) => s.devForceWin);
-  const devForceLose = useGameStore((s) => s.devForceLose);
+  const isPaused = usePauseStore(selectIsPaused);
+  const lastMoveAt = useHintsStore((s) => s.lastMoveAt);
 
   useTimer();
+
+  const [invalidFlashColumn, setInvalidFlashColumn] = useState<number | null>(
+    null
+  );
+
+  const attemptMove = useCallback(
+    (from: number, cardIndex: number, to: number): boolean => {
+      const result = attemptMoveAction(from, cardIndex, to);
+      if (!result.ok && result.reason === "invalid") {
+        setInvalidFlashColumn(result.column);
+      }
+      return result.ok;
+    },
+    [attemptMoveAction]
+  );
 
   useEffect(() => {
     if (hasHydrated && !present) {
@@ -75,12 +87,12 @@ function InnerShell() {
     if (invalidFlashColumn === null) {
       return;
     }
-    const t = window.setTimeout(() => setInvalidFlash(null), 380);
+    const t = window.setTimeout(() => setInvalidFlashColumn(null), 380);
     return () => window.clearTimeout(t);
-  }, [invalidFlashColumn, setInvalidFlash]);
+  }, [invalidFlashColumn]);
 
   useEffect(() => {
-    if (!present || anyDialogOpen) {
+    if (!present || isPaused) {
       return;
     }
     const t = window.setTimeout(() => {
@@ -90,16 +102,16 @@ function InnerShell() {
       }
     }, HINT_IDLE_MS + 20);
     return () => window.clearTimeout(t);
-  }, [present, lastMoveAt, anyDialogOpen, cycleHint]);
+  }, [present, lastMoveAt, isPaused, cycleHint]);
 
-  useHotkey("Mod+Z", () => undo(), { enabled: canUndo && !anyDialogOpen });
-  useHotkey("H", () => cycleHint(), { enabled: !anyDialogOpen });
-  useHotkey("Space", () => runDeal(), { enabled: canDeal && !anyDialogOpen });
+  useHotkey("Mod+Z", () => undo(), { enabled: canUndo && !isPaused });
+  useHotkey("H", () => cycleHint(), { enabled: !isPaused });
+  useHotkey("Space", () => runDeal(), { enabled: canDeal && !isPaused });
   useHotkey("Shift+W", () => devForceWin(), {
-    enabled: IS_DEV && !!present && !anyDialogOpen,
+    enabled: IS_DEV && !!present && !isPaused,
   });
   useHotkey("Shift+L", () => devForceLose(), {
-    enabled: IS_DEV && !!present && !anyDialogOpen,
+    enabled: IS_DEV && !!present && !isPaused,
   });
 
   const [selection, setSelection] = useState<{
@@ -317,11 +329,8 @@ function InnerShell() {
         <BottomBar />
 
         <WinFlourish />
-        <SettingsDialog />
-        <StatsDialog />
         <WinDialog />
         <LoseDialog />
-        <ConfirmDialog />
       </main>
     </DragProvider>
   );

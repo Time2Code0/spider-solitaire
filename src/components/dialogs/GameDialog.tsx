@@ -9,8 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/Dialog";
-import type { DialogName } from "@/game/store";
-import { useGameStore } from "@/game/store";
+import { usePausesTimerWhileOpen } from "@/game/pauseStore";
 import { cn } from "@/lib/utils";
 
 export interface GameDialogProps {
@@ -18,7 +17,8 @@ export interface GameDialogProps {
   description?: string;
   dismissible?: boolean;
   footer?: React.ReactNode;
-  name: DialogName;
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
   size?: "md" | "lg";
   title: string;
 }
@@ -29,28 +29,21 @@ const sizeClasses: Record<NonNullable<GameDialogProps["size"]>, string> = {
 };
 
 export function GameDialog({
-  name,
   title,
   description,
   children,
   footer,
   size = "md",
   dismissible = true,
+  open,
+  onOpenChange,
 }: GameDialogProps) {
-  const open = useGameStore((s) => s.openDialogs.includes(name));
-  const openDialog = useGameStore((s) => s.openDialog);
-  const closeDialog = useGameStore((s) => s.closeDialog);
+  usePausesTimerWhileOpen(open);
 
   return (
     <Dialog
       disablePointerDismissal={!dismissible}
-      onOpenChange={(next) => {
-        if (next) {
-          openDialog(name);
-        } else {
-          closeDialog(name);
-        }
-      }}
+      onOpenChange={onOpenChange}
       open={open}
     >
       <DialogContent

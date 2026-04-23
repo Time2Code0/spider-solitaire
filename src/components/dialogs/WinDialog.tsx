@@ -1,31 +1,37 @@
 "use client";
 
 import { Award, RefreshCcw, Trophy } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { isWon } from "@/game/engine";
 import { isNewBest } from "@/game/stats";
+import { useStatsStore } from "@/game/statsStore";
 import { selectCurrentGame, useGameStore } from "@/game/store";
 import { GameDialog } from "./GameDialog";
 import { GameSummary } from "./GameSummary";
 
+const WIN_DIALOG_DELAY_MS = 2800;
+
 export function WinDialog() {
-  const open = useGameStore((s) => s.openDialogs.includes("game-won"));
-  if (!open) {
-    return null;
-  }
-  return <WinDialogInner />;
-}
-
-function WinDialogInner() {
   const game = useGameStore(selectCurrentGame);
-  const stats = useGameStore((s) => s.stats);
+  const stats = useStatsStore((s) => s.stats);
   const startNewGame = useGameStore((s) => s.startNewGame);
-  const closeDialog = useGameStore((s) => s.closeDialog);
 
-  if (!game) {
-    return null;
-  }
-  if (!isWon(game)) {
+  const [open, setOpen] = useState(false);
+
+  const completedAt = game?.completedAt ?? null;
+  const won = game ? isWon(game) : false;
+
+  useEffect(() => {
+    if (!(completedAt && won)) {
+      setOpen(false);
+      return;
+    }
+    const t = window.setTimeout(() => setOpen(true), WIN_DIALOG_DELAY_MS);
+    return () => window.clearTimeout(t);
+  }, [completedAt, won]);
+
+  if (!(game && isWon(game))) {
     return null;
   }
 
@@ -41,9 +47,9 @@ function WinDialogInner() {
       recordedEntry.elapsedMs === currentEntry.elapsedMs
     : isNewBest(difficultyStats, currentEntry);
 
-  const onClose = () => closeDialog("game-won");
+  const onClose = () => setOpen(false);
   const onPlayAgain = () => {
-    closeDialog("game-won");
+    setOpen(false);
     startNewGame();
   };
 
@@ -65,7 +71,8 @@ function WinDialogInner() {
           </Button>
         </>
       }
-      name="game-won"
+      onOpenChange={setOpen}
+      open={open}
       title="You won!"
     >
       <div className="flex flex-col items-center gap-6 py-2 text-center">

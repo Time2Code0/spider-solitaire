@@ -3,7 +3,7 @@
 import { Tabs } from "@base-ui-components/react/tabs";
 import { formatElapsed } from "@/components/game/useTimer";
 import { averageWinElapsedMs, averageWinMoves, winRate } from "@/game/stats";
-import { useGameStore } from "@/game/store";
+import { useStatsStore } from "@/game/statsStore";
 import type { Difficulty, DifficultyStats } from "@/game/types";
 import { cn } from "@/lib/utils";
 import { GameDialog } from "./GameDialog";
@@ -14,21 +14,26 @@ const DIFFICULTIES: { value: Difficulty; label: string }[] = [
   { value: 4, label: "4 suits" },
 ];
 
-export function StatsDialog() {
-  const open = useGameStore((s) => s.openDialogs.includes("stats"));
+export interface StatsDialogProps {
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
+}
+
+export function StatsDialog({ open, onOpenChange }: StatsDialogProps) {
   if (!open) {
     return null;
   }
-  return <StatsDialogInner />;
+  return <StatsDialogInner onOpenChange={onOpenChange} open={open} />;
 }
 
-function StatsDialogInner() {
-  const stats = useGameStore((s) => s.stats);
+function StatsDialogInner({ open, onOpenChange }: StatsDialogProps) {
+  const stats = useStatsStore((s) => s.stats);
 
   return (
     <GameDialog
       description="Win-rate, averages, and your best games for each difficulty."
-      name="stats"
+      onOpenChange={onOpenChange}
+      open={open}
       size="lg"
       title="Statistics"
     >
