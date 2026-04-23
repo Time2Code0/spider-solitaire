@@ -10,21 +10,30 @@ import {
   Settings as SettingsIcon,
   Timer,
 } from "lucide-react";
+import { useState } from "react";
+import { ConfirmDialog } from "@/components/dialogs/ConfirmDialog";
+import { SettingsDialog } from "@/components/dialogs/SettingsDialog";
+import { StatsDialog } from "@/components/dialogs/StatsDialog";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { isWon } from "@/game/engine";
+import { useHintsStore } from "@/game/hintsStore";
+import { useSettingsStore } from "@/game/settingsStore";
 import { selectCanUndo, selectCurrentGame, useGameStore } from "@/game/store";
 import { DevTools } from "./DevTools";
 
 export function BottomBar() {
   const present = useGameStore(selectCurrentGame);
   const canUndo = useGameStore(selectCanUndo);
-  const openDialog = useGameStore((s) => s.openDialog);
-  const settings = useGameStore((s) => s.settings);
+  const settings = useSettingsStore((s) => s.settings);
   const undo = useGameStore((s) => s.undo);
-  const cycleHint = useGameStore((s) => s.cycleHint);
+  const cycleHint = useHintsStore((s) => s.cycleHint);
   const startNewGame = useGameStore((s) => s.startNewGame);
+
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [statsOpen, setStatsOpen] = useState(false);
+  const [confirmNewGameOpen, setConfirmNewGameOpen] = useState(false);
 
   const moves = present?.moves ?? 0;
   const elapsed = present?.elapsedMs ?? 0;
@@ -39,71 +48,80 @@ export function BottomBar() {
       startNewGame();
       return;
     }
-    openDialog("confirm-new-game");
+    setConfirmNewGameOpen(true);
   };
 
   return (
-    <div className="fixed right-0 bottom-0 left-0 z-40 flex h-(--bottom-bar-h) items-center gap-6 border-white/10 border-t bg-black/55 px-8 backdrop-blur-xl">
-      <div className="flex flex-1 items-center gap-3">
-        <BaseTooltip.Provider closeDelay={80} delay={350}>
-          <Tooltip label="Settings">
-            <IconButton
-              icon={SettingsIcon}
-              label="Open settings"
-              onClick={() => openDialog("settings")}
-            />
-          </Tooltip>
-          <Tooltip label="Statistics">
-            <IconButton
-              icon={BarChart3}
-              label="Open statistics"
-              onClick={() => openDialog("stats")}
-            />
-          </Tooltip>
-          <Tooltip hotkey="Mod+Z" label="Undo">
-            <IconButton
-              disabled={!canUndo}
-              icon={RotateCcw}
-              label="Undo last move"
-              onClick={undo}
-            />
-          </Tooltip>
-          <Tooltip hotkey="H" label="Hint">
-            <IconButton
-              disabled={!present}
-              icon={Lightbulb}
-              label="Show a hint"
-              onClick={cycleHint}
-            />
-          </Tooltip>
-        </BaseTooltip.Provider>
-        {process.env.NODE_ENV === "development" && <DevTools />}
-      </div>
+    <>
+      <div className="fixed right-0 bottom-0 left-0 z-40 flex h-(--bottom-bar-h) items-center gap-6 border-white/10 border-t bg-black/55 px-8 backdrop-blur-xl">
+        <div className="flex flex-1 items-center gap-3">
+          <BaseTooltip.Provider closeDelay={80} delay={350}>
+            <Tooltip label="Settings">
+              <IconButton
+                icon={SettingsIcon}
+                label="Open settings"
+                onClick={() => setSettingsOpen(true)}
+              />
+            </Tooltip>
+            <Tooltip label="Statistics">
+              <IconButton
+                icon={BarChart3}
+                label="Open statistics"
+                onClick={() => setStatsOpen(true)}
+              />
+            </Tooltip>
+            <Tooltip hotkey="Mod+Z" label="Undo">
+              <IconButton
+                disabled={!canUndo}
+                icon={RotateCcw}
+                label="Undo last move"
+                onClick={undo}
+              />
+            </Tooltip>
+            <Tooltip hotkey="H" label="Hint">
+              <IconButton
+                disabled={!present}
+                icon={Lightbulb}
+                label="Show a hint"
+                onClick={cycleHint}
+              />
+            </Tooltip>
+          </BaseTooltip.Provider>
+          {process.env.NODE_ENV === "development" && <DevTools />}
+        </div>
 
-      <Button
-        className="ease-out active:scale-97"
-        onClick={handleNewGame}
-        size="lg"
-        variant="primary"
-      >
-        <Play aria-hidden className="size-5" strokeWidth={2} />
-        New game
-      </Button>
+        <Button
+          className="ease-out active:scale-97"
+          onClick={handleNewGame}
+          size="lg"
+          variant="primary"
+        >
+          <Play aria-hidden className="size-5" strokeWidth={2} />
+          New game
+        </Button>
 
-      <div className="flex flex-1 items-center justify-end gap-8">
-        <Stat icon={<Timer aria-hidden className="size-4" />} label="Time">
-          <AnimatedElapsed ms={elapsed} />
-        </Stat>
-        <Stat label="Moves">
-          <NumberFlow
-            className="tabular-nums"
-            transformTiming={{ duration: 500, easing: "ease-out" }}
-            value={moves}
-            willChange
-          />
-        </Stat>
+        <div className="flex flex-1 items-center justify-end gap-8">
+          <Stat icon={<Timer aria-hidden className="size-4" />} label="Time">
+            <AnimatedElapsed ms={elapsed} />
+          </Stat>
+          <Stat label="Moves">
+            <NumberFlow
+              className="tabular-nums"
+              transformTiming={{ duration: 500, easing: "ease-out" }}
+              value={moves}
+              willChange
+            />
+          </Stat>
+        </div>
       </div>
-    </div>
+      <SettingsDialog onOpenChange={setSettingsOpen} open={settingsOpen} />
+      <StatsDialog onOpenChange={setStatsOpen} open={statsOpen} />
+      <ConfirmDialog
+        onConfirm={() => startNewGame()}
+        onOpenChange={setConfirmNewGameOpen}
+        open={confirmNewGameOpen}
+      />
+    </>
   );
 }
 

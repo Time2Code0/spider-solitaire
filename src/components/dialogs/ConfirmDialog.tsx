@@ -1,24 +1,36 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
-import { useGameStore } from "@/game/store";
 import { GameDialog } from "./GameDialog";
 
-export function ConfirmDialog() {
-  const confirmNewGameOpen = useGameStore((s) =>
-    s.openDialogs.includes("confirm-new-game")
-  );
-  return confirmNewGameOpen ? <ConfirmNewGame /> : null;
+export interface ConfirmDialogProps {
+  onConfirm: () => void;
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
 }
 
-function ConfirmNewGame() {
-  const closeDialog = useGameStore((s) => s.closeDialog);
-  const startNewGame = useGameStore((s) => s.startNewGame);
+export function ConfirmDialog({
+  open,
+  onOpenChange,
+  onConfirm,
+}: ConfirmDialogProps) {
+  if (!open) {
+    return null;
+  }
+  return (
+    <ConfirmNewGame
+      onConfirm={onConfirm}
+      onOpenChange={onOpenChange}
+      open={open}
+    />
+  );
+}
 
-  const onCancel = () => closeDialog("confirm-new-game");
-  const onConfirm = () => {
-    startNewGame();
-    closeDialog("confirm-new-game");
+function ConfirmNewGame({ open, onOpenChange, onConfirm }: ConfirmDialogProps) {
+  const onCancel = () => onOpenChange(false);
+  const handleConfirm = () => {
+    onConfirm();
+    onOpenChange(false);
   };
 
   return (
@@ -28,12 +40,13 @@ function ConfirmNewGame() {
           <Button onClick={onCancel} variant="ghost">
             Keep playing
           </Button>
-          <Button onClick={onConfirm} variant="danger">
+          <Button onClick={handleConfirm} variant="danger">
             Abandon &amp; new game
           </Button>
         </>
       }
-      name="confirm-new-game"
+      onOpenChange={onOpenChange}
+      open={open}
       title="Abandon current game?"
     >
       <p className="text-ink-dim text-sm leading-relaxed">

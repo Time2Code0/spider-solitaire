@@ -15,7 +15,8 @@ import {
   describeBack,
   describeFront,
 } from "@/game/decks";
-import { useGameStore } from "@/game/store";
+import { useSettingsStore } from "@/game/settingsStore";
+import { useStatsStore } from "@/game/statsStore";
 import type {
   BackgroundColor,
   BackgroundStyle,
@@ -32,23 +33,28 @@ const DIFFICULTIES: { value: Difficulty; label: string; hint: string }[] = [
   { value: 4, label: "4 suits", hint: "Hardest" },
 ];
 
-export function SettingsDialog() {
-  const open = useGameStore((s) => s.openDialogs.includes("settings"));
+export interface SettingsDialogProps {
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
+}
+
+export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   if (!open) {
     return null;
   }
-  return <SettingsDialogInner />;
+  return <SettingsDialogInner onOpenChange={onOpenChange} open={open} />;
 }
 
-function SettingsDialogInner() {
-  const settings = useGameStore((s) => s.settings);
-  const updateSettings = useGameStore((s) => s.updateSettings);
-  const resetStats = useGameStore((s) => s.resetStats);
+function SettingsDialogInner({ open, onOpenChange }: SettingsDialogProps) {
+  const settings = useSettingsStore((s) => s.settings);
+  const updateSettings = useSettingsStore((s) => s.updateSettings);
+  const resetStats = useStatsStore((s) => s.resetStats);
 
   return (
     <GameDialog
       description="Preferences apply to the next game you start."
-      name="settings"
+      onOpenChange={onOpenChange}
+      open={open}
       size="lg"
       title="Settings"
     >

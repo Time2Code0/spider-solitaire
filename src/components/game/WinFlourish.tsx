@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 import { describeFront } from "@/game/decks";
 import { isWon } from "@/game/engine";
+import { useSettingsStore } from "@/game/settingsStore";
 import { selectCurrentGame, useGameStore } from "@/game/store";
 import type { Card, CardFrontId } from "@/game/types";
 
@@ -11,7 +12,7 @@ const CASCADE_COUNT = 24;
 
 export function WinFlourish() {
   const game = useGameStore(selectCurrentGame);
-  const front = useGameStore((s) => s.settings.cardFront);
+  const front = useSettingsStore((s) => s.settings.cardFront);
   const prefersReduced = useReducedMotion();
   const [isPlaying, setIsPlaying] = useState(false);
   const [seed, setSeed] = useState(0);
