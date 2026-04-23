@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
+import { AsciiSignature } from "./layout.client";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html className={geistSans.variable} lang="en">
       <body className="relative font-sans text-base antialiased">
         <div className="isolate flex min-h-screen flex-col">{children}</div>
+        <AsciiSignature />
       </body>
     </html>
   );
