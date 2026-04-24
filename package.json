@@ -8,7 +8,10 @@
     "start": "next start",
     "clean": "rimraf --glob **/node_modules **/.next **/.eslintcache pnpm-lock.yaml",
     "lint": "biome check",
-    "format": "biome format --write"
+    "format": "biome format --write",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
+    "tauri:bundle-mac": "tauri build --bundles app,dmg"
   },
   "dependencies": {
     "@base-ui-components/react": "1.0.0-rc.0",
@@ -26,6 +29,8 @@
   "devDependencies": {
     "@biomejs/biome": "2.4.12",
     "@tailwindcss/postcss": "^4",
+    "@tauri-apps/api": "^2.10.1",
+    "@tauri-apps/cli": "^2.10.1",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/node": "^20",
     "@types/react": "^19",
