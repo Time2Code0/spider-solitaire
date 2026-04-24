@@ -22,6 +22,8 @@
   <a href="#tech-stack"><strong>Tech Stack</strong></a>
   ·
   <a href="#local-development"><strong>Local Development</strong></a>
+  ·
+  <a href="#native-macos-app"><strong>Native macOS App</strong></a>
 </p>
 
 ## Introduction
@@ -55,3 +57,33 @@ pnpm dev
 ```
 
 Then open [http://localhost:3000](http://localhost:3000).
+
+## Native macOS App
+
+The project ships with a [Tauri 2](https://v2.tauri.app) shell in `src-tauri/` that wraps the Next.js static export into a native macOS application.
+
+### Prerequisites
+
+- Xcode Command Line Tools (`xcode-select --install`)
+- A Rust toolchain (install with [`rustup`](https://rustup.rs))
+
+### Run in a native window
+
+```bash
+pnpm tauri:dev
+```
+
+This starts `next dev` on `localhost:3000` and opens a native WebView window pointing at it. Hot reload works the same as in the browser.
+
+### Build a distributable macOS app & DMG
+
+```bash
+pnpm tauri:build:mac
+```
+
+Artifacts are produced under `src-tauri/target/release/bundle/`:
+
+- `macos/Spider Solitaire.app` — the app bundle
+- `dmg/Spider Solitaire_<version>_<arch>.dmg` — a draggable installer
+
+> Note: unsigned builds will be gated by Gatekeeper. For distribution, configure code signing and notarization as described in the [Tauri macOS signing guide](https://v2.tauri.app/distribute/sign/macos/).
