@@ -18,7 +18,8 @@ $$$$$$$$\\ $$\\                          $$$$$$\\   $$$$$$\\                  $$
    \\__|   \\__|\\__| \\__| \\__| \\_______|\\________| \\______/  \\______/  \\_______| \\_______|
 
 
-WEBSITE: https://design-time2code.vercel.app
+WEBSITE:    https://design-time2code.vercel.app
+REPOSITORY: https://github.com/Time2Code0/spider-solitaire
       `);
       ref.current = true;
     }
