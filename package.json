@@ -17,6 +17,7 @@
     "@base-ui-components/react": "1.0.0-rc.0",
     "@number-flow/react": "^0.6.0",
     "@tanstack/react-hotkeys": "^0.9.1",
+    "@tauri-apps/plugin-window-state": "^2.4.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.8.0",
     "motion": "^12.38.0",
